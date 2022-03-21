@@ -40,17 +40,17 @@
 #include "../Inc/config.h"
 #include "../Inc/defines.h"
 #include "../Inc/gpio.h"
-//#include "../Inc/setup.h"
-//#include "../Inc/it.h"
-//#include "../Inc/bldc.h"
-//#include "../Inc/commsMasterSlave.h"
-//#include "../Inc/commsSteering.h"
-//#include "../Inc/commsBluetooth.h"
+#include "../Inc/setup.h"
+#include "../Inc/it.h"
+#include "../Inc/bldc.h"
+#include "../Inc/commsMasterSlave.h"
+#include "../Inc/commsSteering.h"
+#include "../Inc/commsBluetooth.h"
 //#include "../Inc/util.h"
 //#include "../Inc/misc.h"
 #include "../Inc/blink.h"
 
-#define BIT(x) ((uint32_t) 1 << (x))
+//#define BIT(x) ((uint32_t) 1 << (x))
 
 //----------------------------------------------------------------------------
 // MAIN function
@@ -76,8 +76,8 @@ int main (void)
 //	TimeoutTimer_init();
 
 	// Init GPIOs
-//	GPIO_init();	// defined in setup.c
-	GPIO_Init();	// defined in gpio.c
+	GPIO_init();	// defined in setup.c
+//	GPIO_Init();	// defined in gpio.c
 
 	// Activate self hold direct after GPIO-init
 	// gpio_bit_write(SELF_HOLD_PORT, SELF_HOLD_PIN, SET);
@@ -131,18 +131,18 @@ int main (void)
 		delay(); // defined in blink.c
 
 		//HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_RESET);
-		HAL_GPIO_TogglePin(GPIOC, LED_RED);
+		//HAL_GPIO_TogglePin(GPIOC, LED_RED);
 		//intro_demo_led(100);	// defined in misc.c, testing
-		//led_on();
+		led_on();
 		//*GPIOC_BSRR |= BIT(13 + 0);  // turn LED on
 
 		//HAL_Delay(100);
 		delay(); // defined in blink.c
 
 		//HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_SET);
-		HAL_GPIO_TogglePin(GPIOC, LED_RED);
+		//HAL_GPIO_TogglePin(GPIOC, LED_RED);
 	        //*GPIOC_BSRR |= BIT(13 + 16); // turn LED off
-		//led_off(); // defined in blink.c
+		led_off(); // defined in blink.c
   	}
 }
 

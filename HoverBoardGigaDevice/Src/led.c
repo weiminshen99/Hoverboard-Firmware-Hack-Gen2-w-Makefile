@@ -28,9 +28,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "gd32f1x0.h"
-#include "stm32f1xx_hal.h"
-
+#include "../Inc/config.h"
 #include "../Inc/led.h"
 #include "../Inc/defines.h"
 

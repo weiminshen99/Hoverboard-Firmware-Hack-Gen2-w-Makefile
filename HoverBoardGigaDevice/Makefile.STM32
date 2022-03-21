@@ -6,15 +6,17 @@
 # Generic Makefile (based on gcc)
 #
 # ChangeLog :
-#	2017-02-10 - Several enhancements + project update mode
+#   2022-3-18  - improvements for hover-master-slave-boards by WMS
+#   2017-02-10 - Several enhancements + project update mode
 #   2015-07-22 - first version
 # ------------------------------------------------
 
 ######################################
-# target
+# target: change config.h to select MASTER or SLAVE
 ######################################
 TARGET = firmware
-
+#TARGET = master
+#TARGET = slave
 
 ######################################
 # building variables
@@ -36,54 +38,41 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_adc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_can.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_cec.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_cmp.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_crc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dac.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dbg.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dma.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_exti.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_fmc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_fwdgt.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_gpio.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_i2c.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_ivref.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_misc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_opa.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_pmu.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_rcu.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_rtc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_slcd.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_spi.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_syscfg.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_timer.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_tsi.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_usart.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_wwdgt.c \
-Drivers/CMSIS/Source/system_gd32f1x0.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c \
+Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c \
+Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c \
 Src/main.c \
-Src/bldc.c \
-Src/commsMasterSlave.c \
-Src/led.c \
-Src/comms.c \
-Src/commsSteering.c \
-Src/commsBluetooth.c \
-Src/it.c \
-Src/setup.c \
-Src/blink.c
-#Src/util.c \
-#Src/systick.c \
-#Src/mpu6050.c \
-#Src/mpu6050_dmp.c \
-#Src/i2c_it.c \
-#Src/gd32f1x0_it.c
+Src/misc.c \
+Src/gpio.c \
+Src/blink.c \
+#Src/setup.c \
+#Src/led.c \
+#Src/bldc.c \
+#Src/it.c \
+#Src/comms.c \
+#Src/commsMasterSlave.c \
+#Src/commsSteering.c \
+#Src/commsBluetooth.c \
 
 # ASM sources
 ASM_SOURCES =  \
-startup_gd32f1x0.s
-
+startup_stm32f103xb.s
+#../blink1/bootstrap.s
+#startup_stm32f103xe.s
 
 #######################################
 # binaries
@@ -105,7 +94,7 @@ GDB= $(PREFIX)gdb
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
- 
+
 #######################################
 # CFLAGS
 #######################################
@@ -127,9 +116,9 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
--DUSE_STDPERIPH_DRIVER \
--DGD32F130_150
-
+ -DUSE_HAL_DRIVER \
+ -DSTM32F103xB
+# -DSTM32F103xE
 
 # AS includes
 AS_INCLUDES = 
@@ -137,9 +126,10 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -IInc \
--IDrivers/GD32F1x0_standard_peripheral/Include \
--IDrivers/CMSIS/Include \
--IDrivers/CMSIS 
+-IDrivers/STM32F1xx_HAL_Driver/Inc \
+-IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
+-IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
+-IDrivers/CMSIS/Include
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -159,7 +149,9 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = GD32F130C6T_FLASH.ld
+#LDSCRIPT = GD32F130C6T_FLASH.ld
+#LDSCRIPT = STM32F103RCTx_FLASH.ld
+LDSCRIPT = STM32F103C8Tx_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys 
@@ -190,14 +182,18 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 	$(SZ) $@
 
+slave:	$(OBJECTS) Makefile
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(SZ) $@
+
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
-	
+
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
+	$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir $@
 
 #######################################
 # clean up

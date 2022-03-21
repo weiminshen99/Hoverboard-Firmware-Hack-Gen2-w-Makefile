@@ -31,8 +31,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "gd32f1x0.h"
-//#include "stm32f1xx_hal.h"
+//#include "gd32f1x0.h"
+#include "stm32f1xx_hal.h"
 
 // ################################################################################
 

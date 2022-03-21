@@ -28,8 +28,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "gd32f1x0.h"
-#include "stm32f1xx_hal.h"
+#include "../Inc/config.h"
 
 //----------------------------------------------------------------------------
 // Send buffer via USART
@@ -37,7 +36,7 @@
 void SendBuffer(uint32_t usart_periph, uint8_t buffer[], uint8_t length)
 {
 	uint8_t index = 0;
-	
+
 	for(; index < length; index++)
 	{
     usart_data_transmit(usart_periph, buffer[index]);

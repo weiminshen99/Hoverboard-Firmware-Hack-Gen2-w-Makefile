@@ -28,18 +28,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "gd32f1x0.h"
-#include "stm32f1xx_hal.h"
+#include "stdio.h"
+#include "string.h"
+
+#include "../Inc/config.h"
 #include "../Inc/it.h"
-//#include "../Inc/i2c_it.h"
 #include "../Inc/comms.h"
 #include "../Inc/commsSteering.h"
 #include "../Inc/setup.h"
-#include "../Inc/config.h"
 #include "../Inc/defines.h"
 #include "../Inc/bldc.h"
-#include "stdio.h"
-#include "string.h"
 
 // Only master communicates with steerin device
 #ifdef MASTER

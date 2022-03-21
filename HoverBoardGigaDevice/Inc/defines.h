@@ -86,8 +86,8 @@
 // ======= END =========
 
 // Mosfet output
-//#define MOSFET_OUT_PIN GPIO_PIN_13
-//#define MOSFET_OUT_PORT GPIOC
+#define MOSFET_OUT_PIN GPIO_PIN_13
+#define MOSFET_OUT_PORT GPIOC
 
 // Brushless Control DC (BLDC) defines
 // Channel G

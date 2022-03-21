@@ -32,11 +32,9 @@
 #include "../Inc/setup.h"
 #include "../Inc/defines.h"
 #include "../Inc/it.h"
-#include "../Inc/misc.h"
 
 #define TIMEOUT_FREQ  1000
 
-/*
 // timeout timer parameter structs
 timer_parameter_struct timeoutTimer_paramter_struct;
 
@@ -53,23 +51,22 @@ uint8_t usartSteer_COM_rx_buf[USART_STEER_COM_RX_BUFFERSIZE];
 // DMA (ADC) structs
 dma_parameter_struct dma_init_struct_adc;
 extern adc_buf_t adc_buffer;
-*/
 
 //----------------------------------------------------------------------------
 // Initializes the interrupts
 //----------------------------------------------------------------------------
-/*
+
 void Interrupt_init(void)
 {
   	// Set IRQ priority configuration
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
 }
-*/
+
 
 //----------------------------------------------------------------------------
 // Initializes the watchdog
 //----------------------------------------------------------------------------
-/*
+
 ErrStatus Watchdog_init(void)
 {
 	// Check if the system has resumed from FWDGT reset
@@ -94,12 +91,12 @@ ErrStatus Watchdog_init(void)
 
 	return SUCCESS;
 }
-*/
+
 
 //----------------------------------------------------------------------------
 // Initializes the timeout timer
 //----------------------------------------------------------------------------
-/*
+
 void TimeoutTimer_init(void)
 {
 	// Enable timer clock
@@ -126,7 +123,7 @@ void TimeoutTimer_init(void)
 	// Enable timer
 	timer_enable(TIMER13);
 }
-*/
+
 
 //----------------------------------------------------------------------------
 // Initializes the GPIOs
@@ -161,7 +158,7 @@ void GPIO_init(void)
 	gpio_mode_set(MOSFET_OUT_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, MOSFET_OUT_PIN);
 	gpio_output_options_set(MOSFET_OUT_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, MOSFET_OUT_PIN);
 
-/*
+
 	// Init HAL input
 	gpio_mode_set(HALL_A_PORT , GPIO_MODE_INPUT, GPIO_PUPD_NONE, HALL_A_PIN);
 	gpio_mode_set(HALL_B_PORT , GPIO_MODE_INPUT, GPIO_PUPD_NONE, HALL_B_PIN);
@@ -235,12 +232,12 @@ void GPIO_init(void)
 	gpio_mode_set(CHARGE_STATE_PORT, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, CHARGE_STATE_PIN);
 #endif
 }
-*/
+
 
 //----------------------------------------------------------------------------
 // Initializes the PWM
 //----------------------------------------------------------------------------
-/*
+
 void PWM_init(void)
 {
 	// Enable timer clock
@@ -324,12 +321,12 @@ void PWM_init(void)
 	// Enable the timer and start PWM
 	timer_enable(TIMER_BLDC);
 }
-*/
+
 
 //----------------------------------------------------------------------------
 // Initializes the ADC
 //----------------------------------------------------------------------------
-/*
+
 void ADC_init(void)
 {
 	// Enable ADC and DMA clock
@@ -396,12 +393,12 @@ void ADC_init(void)
 	// Set ADC to scan mode
 	adc_special_function_config(ADC_SCAN_MODE, ENABLE);
 }
-*/
+
 
 //----------------------------------------------------------------------------
 // Initializes the usart master slave
 //----------------------------------------------------------------------------
-/*
+
 void USART_MasterSlave_init(void)
 {
 	// Enable ADC and DMA clock
@@ -454,12 +451,12 @@ void USART_MasterSlave_init(void)
 	// Enable dma receive channel
 	dma_channel_enable(DMA_CH4);
 }
-*/
+
 
 //----------------------------------------------------------------------------
 // Initializes the usart steer/bluetooth
 //----------------------------------------------------------------------------
-/*
+
 void USART_Steer_COM_init(void)
 {
 		// Enable ADC and DMA clock
@@ -512,4 +509,4 @@ void USART_Steer_COM_init(void)
 	// Enable dma receive channel
 	dma_channel_enable(DMA_CH2);
 }
-*/
+

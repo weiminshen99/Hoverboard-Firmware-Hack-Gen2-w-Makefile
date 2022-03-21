@@ -28,11 +28,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "gd32f1x0.h"
-#include "stm32f1xx_hal.h"
+#include "../Inc/config.h"
 #include "../Inc/setup.h"
 #include "../Inc/defines.h"
-#include "../Inc/config.h"
 
 // Internal constants
 const int16_t pwm_res = 72000000 / 2 / PWM_FREQ; // = 2000

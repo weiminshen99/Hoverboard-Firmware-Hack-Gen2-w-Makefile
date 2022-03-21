@@ -28,16 +28,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "gd32f1x0.h"
-#include "stm32f1xx_hal.h"
+#include "stdio.h"
+#include "string.h"
+
+#include "../Inc/config.h"
 #include "../Inc/defines.h"
 #include "../Inc/setup.h"
 #include "../Inc/comms.h"
 #include "../Inc/commsMasterSlave.h"
 #include "../Inc/commsBluetooth.h"
 #include "../Inc/led.h"
-#include "stdio.h"
-#include "string.h"
 
 // Only slave communicates over bluetooth
 #ifdef SLAVE
