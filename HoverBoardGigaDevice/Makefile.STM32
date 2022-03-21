@@ -59,7 +59,7 @@ Src/main.c \
 Src/misc.c \
 Src/gpio.c \
 Src/blink.c \
-#Src/setup.c \
+Src/setup.c \
 #Src/led.c \
 #Src/bldc.c \
 #Src/it.c \

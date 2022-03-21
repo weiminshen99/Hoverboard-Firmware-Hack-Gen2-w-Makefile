@@ -36,33 +36,26 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_adc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_can.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_cec.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_cmp.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_crc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dac.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dbg.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dma.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_exti.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_fmc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_fwdgt.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_gpio.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_i2c.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_ivref.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_misc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_opa.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_pmu.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_rcu.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_rtc.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_slcd.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_spi.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_syscfg.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_timer.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_tsi.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_usart.c \
-Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_wwdgt.c \
-Drivers/CMSIS/Source/system_gd32f1x0.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_adc.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_dbg.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_dma.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_fwdgt.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_gpio.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_i2c.c \
+#RTE/Device/GD32F130C8/Source/gd32f1x0_ivref.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_misc.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_opa.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_pmu.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_rcu.c \
+#RTE/Device/GD32F130C8/Source/gd32f1x0_rtc.c \
+#RTE/Device/GD32F130C8/Source/gd32f1x0_slcd.c \
+#RTE/Device/GD32F130C8/Source/gd32f1x0_spi.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_syscfg.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_timer.c \
+#RTE/Device/GD32F130C8/Source/gd32f1x0_tsi.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_usart.c \
+RTE/Device/GD32F130C8/Source/gd32f1x0_wwdgt.c \
+RTE/Device/GD32F130C8/Source/system_gd32f1x0.c \
 Src/main.c \
 Src/bldc.c \
 Src/commsMasterSlave.c \
@@ -137,7 +130,7 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -IInc \
--IDrivers/GD32F1x0_standard_peripheral/Include \
+-IRTE/Device/GD32F130C8/Include \
 -IDrivers/CMSIS/Include \
 -IDrivers/CMSIS 
 

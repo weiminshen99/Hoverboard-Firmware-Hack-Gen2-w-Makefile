@@ -50,7 +50,7 @@
 //#include "../Inc/misc.h"
 #include "../Inc/blink.h"
 
-#define BIT(x) ((uint32_t) 1 << (x))
+//#define BIT(x) ((uint32_t) 1 << (x))
 
 //----------------------------------------------------------------------------
 // MAIN function
@@ -76,8 +76,8 @@ int main (void)
 //	TimeoutTimer_init();
 
 	// Init GPIOs
-//	GPIO_init();	// defined in setup.c
-	GPIO_Init();	// defined in gpio.c
+	GPIO_init();	// defined in setup.c
+//	GPIO_Init();	// defined in gpio.c
 
 	// Activate self hold direct after GPIO-init
 	// gpio_bit_write(SELF_HOLD_PORT, SELF_HOLD_PIN, SET);
