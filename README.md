@@ -1,3 +1,11 @@
+#### Updates 3-21-2022
+
+Initial changes for using Makefile:
+% cd HoverBoardGigaDevice
+% make
+
+To be done: more testings required on my device.
+
 #### Updates:
 ````
 - Firmware is ready.
