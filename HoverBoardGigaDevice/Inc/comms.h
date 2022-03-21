@@ -31,7 +31,6 @@
 #ifndef COMMS_H
 #define COMMS_H
 
-#include "gd32f1x0.h"
 #include "../Inc/config.h"
 
 //----------------------------------------------------------------------------

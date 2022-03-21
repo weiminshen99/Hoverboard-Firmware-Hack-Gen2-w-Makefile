@@ -1,7 +1,7 @@
 /*
-* This file is part of the hoverboard-firmware-hack-V2 project. The 
+* This file is part of the hoverboard-firmware-hack-V2 project. The
 * firmware is used to hack the generation 2 board of the hoverboard.
-* These new hoverboards have no mainboard anymore. They consist of 
+* These new hoverboards have no mainboard anymore. They consist of
 * two Sensorboards which have their own BLDC-Bridge per Motor and an
 * ARM Cortex-M3 processor GD32F130C8.
 *
@@ -10,8 +10,8 @@
 * Copyright (C) 2018 Kai Liebich
 * Copyright (C) 2018 Christoph Lehnert
 *
-* The program is based on the hoverboard project by Niklas Fauth. The 
-* structure was tried to be as similar as possible, so that everyone 
+* The program is based on the hoverboard project by Niklas Fauth. The
+* structure was tried to be as similar as possible, so that everyone
 * could find a better way through the code.
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,8 +28,12 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "gd32f1x0.h"
+//#include "gd32f1x0.h"
+#include "stm32f1xx_hal.h"
+
 #include "../Inc/it.h"
+//#include "../Inc/i2c_it.h"
+//#include "../gd32f1x0_it.h"
 #include "../Inc/defines.h"
 #include "../Inc/config.h"
 #include "../Inc/bldc.h"
@@ -73,7 +77,7 @@ void ResetTimeout(void)
 // -> period of timer13 running with 1kHz -> interrupt every 1ms
 //----------------------------------------------------------------------------
 void TIMER13_IRQHandler(void)
-{	
+{
 	if (timeoutCounter_ms > TIMEOUT_MS)
 	{
 		// First timeout reset all process values
@@ -88,7 +92,7 @@ void TIMER13_IRQHandler(void)
 			SetPWM(0);
 #endif
 		}
-		
+
 		timedOut = SET;
 	}
 	else
@@ -107,11 +111,11 @@ void TIMER13_IRQHandler(void)
 	{
 		hornCounter_ms++;
 	}
-	
+
 	// Update LED program
 	CalculateLEDProgram();
 #endif
-	
+
 	// Clear timer update interrupt flag
 	timer_interrupt_flag_clear(TIMER13, TIMER_INT_UP);
 }
@@ -126,7 +130,7 @@ void TIMER0_BRK_UP_TRG_COM_IRQHandler(void)
 {
 	// Start ADC conversion
 	adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
-	
+
 	// Clear timer update interrupt flag
 	timer_interrupt_flag_clear(TIMER_BLDC, TIMER_INT_UP);
 }
@@ -140,15 +144,15 @@ void DMA_Channel0_IRQHandler(void)
 {
 	// Calculate motor PWMs
 	CalculateBLDC();
-	
+
 	#ifdef SLAVE
 	// Calculates RGB LED
 	CalculateLEDPWM();
 	#endif
-	
+
 	if (dma_interrupt_flag_get(DMA_CH0, DMA_INT_FLAG_FTF))
 	{
-		dma_interrupt_flag_clear(DMA_CH0, DMA_INT_FLAG_FTF);        
+		dma_interrupt_flag_clear(DMA_CH0, DMA_INT_FLAG_FTF);
 	}
 }
 
@@ -170,7 +174,7 @@ void DMA_Channel1_2_IRQHandler(void)
 		// Update USART bluetooth input mechanism
 		UpdateUSARTBluetoothInput();
 #endif
-		dma_interrupt_flag_clear(DMA_CH2, DMA_INT_FLAG_FTF);        
+		dma_interrupt_flag_clear(DMA_CH2, DMA_INT_FLAG_FTF);
 	}
 }
 
@@ -186,8 +190,8 @@ void DMA_Channel3_4_IRQHandler(void)
 	{
 		// Update USART master slave input mechanism
 		UpdateUSARTMasterSlaveInput();
-		
-		dma_interrupt_flag_clear(DMA_CH4, DMA_INT_FLAG_FTF);        
+
+		dma_interrupt_flag_clear(DMA_CH4, DMA_INT_FLAG_FTF);
 	}
 }
 

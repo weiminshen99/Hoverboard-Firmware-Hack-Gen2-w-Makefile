@@ -28,8 +28,10 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "gd32f1x0.h"
+//#include "gd32f1x0.h"
+#include "stm32f1xx_hal.h"
 #include "../Inc/it.h"
+//#include "../Inc/i2c_it.h"
 #include "../Inc/comms.h"
 #include "../Inc/commsSteering.h"
 #include "../Inc/setup.h"
@@ -65,7 +67,7 @@ void SendSteerDevice(void)
 	// Ask for steer input
 	buffer[index++] = '/';
 	buffer[index++] = '\n';
-	
+
 	SendBuffer(USART_STEER_COM, buffer, index);
 }
 
@@ -75,7 +77,7 @@ void SendSteerDevice(void)
 void UpdateUSARTSteerInput(void)
 {
 	uint8_t character = usartSteer_COM_rx_buf[0];
-	
+
 	// Start character is captured, start record
 	if (character == '/')
 	{
@@ -87,12 +89,12 @@ void UpdateUSARTSteerInput(void)
 	{
 		sUSARTSteerRecordBuffer[sUSARTSteerRecordBufferCounter] = character;
 		sUSARTSteerRecordBufferCounter++;
-		
+
 		if (sUSARTSteerRecordBufferCounter >= USART_STEER_RX_BYTES)
 		{
 			sUSARTSteerRecordBufferCounter = 0;
 			sSteerRecord = 0;
-			
+
 			// Check input
 			CheckUSARTSteerInput (sUSARTSteerRecordBuffer);
 		}
@@ -106,30 +108,30 @@ void CheckUSARTSteerInput(uint8_t USARTBuffer[])
 {
 	// Auxiliary variables
 	uint16_t crc;
-	
+
 	// Check start and stop character
 	if ( USARTBuffer[0] != '/' ||
 		USARTBuffer[USART_STEER_RX_BYTES - 1] != '\n')
 	{
 		return;
 	}
-	
+
 	// Calculate CRC (first bytes except crc and stop byte)
 	crc = CalcCRC(USARTBuffer, USART_STEER_RX_BYTES - 3);
-	
+
 	// Check CRC
 	if ( USARTBuffer[USART_STEER_RX_BYTES - 3] != ((crc >> 8) & 0xFF) ||
 		USARTBuffer[USART_STEER_RX_BYTES - 2] != (crc & 0xFF))
 	{
 		return;
 	}
-	
+
 	// Calculate result speed value -1000 to 1000
 	speed = (int16_t)((USARTBuffer[1] << 8) | USARTBuffer[2]);
-	
+
 	// Calculate result steering value -1000 to 1000
 	steer = (int16_t)((USARTBuffer[3] << 8) | USARTBuffer[4]);
-	
+
 	// Reset the pwm timout to avoid stopping motors
 	ResetTimeout();
 }

@@ -31,12 +31,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "gd32f1x0.h"
+//#include "gd32f1x0.h"
+#include "stm32f1xx_hal.h"
 
 // ################################################################################
 
-#define MASTER										  	// Select if firmware is for master or slave board
-//#define SLAVE 												// Select if firmware is for master or slave board
+// Select if firmware is for master or slave board
+//#define MASTER
+#define SLAVE
 
 // ################################################################################
 

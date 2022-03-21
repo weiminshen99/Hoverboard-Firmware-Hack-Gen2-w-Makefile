@@ -31,7 +31,6 @@
 #ifndef BLDC_H
 #define BLDC_H
 
-#include "gd32f1x0.h"
 #include "../Inc/config.h"
 
 //----------------------------------------------------------------------------

@@ -31,10 +31,10 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#include "gd32f1x0.h"
 #include "../Inc/config.h"
 
-// LED defines
+// ======= LED defines for GD32 =========
+/*
 #define LED_GREEN GPIO_PIN_15
 #define LED_GREEN_PORT GPIOA
 #define LED_ORANGE GPIO_PIN_12
@@ -46,10 +46,48 @@
 #define UPPER_LED_PORT GPIOA
 #define LOWER_LED_PIN GPIO_PIN_0
 #define LOWER_LED_PORT GPIOA
+*/
+
+// ======= LED defines FOR STM32/Bluepill =========
+
+#define LED_GREEN GPIO_PIN_9		// LED2 by FERU
+#define LED_GREEN_PORT GPIOB
+#define LED_ORANGE GPIO_PIN_8		// LED3 by FERU
+#define LED_ORANGE_PORT GPIOB
+//#define LED_RED GPIO_PIN_0		// LED1 by FERU
+//#define LED_RED_PORT GPIOA
+#define LED_RED GPIO_PIN_13  	// testing on Bluepill
+#define LED_RED_PORT GPIOC	// for testing on Bluepill
+
+#define UPPER_LED_PIN GPIO_PIN_4	// LED5 in PERU
+#define UPPER_LED_PORT GPIOB
+#define LOWER_LED_PIN GPIO_PIN_5	// LED4 in FERU
+#define LOWER_LED_PORT GPIOB
+
+/* ========(for reference)========= Defines LEDs by FERU ==========
+#define LED1_GPIO_Port              GPIOA
+#define LED1_Pin                    GPIO_PIN_0      // RED
+#define LED2_GPIO_Port              GPIOB
+#define LED2_Pin                    GPIO_PIN_9      // GREEN
+#define LED3_GPIO_Port              GPIOB
+#define LED3_Pin                    GPIO_PIN_8      // YELLOW
+#define LED4_GPIO_Port              GPIOB
+#define LED4_Pin                    GPIO_PIN_5      // BLUE1
+#define LED5_GPIO_Port              GPIOB
+#define LED5_Pin                    GPIO_PIN_4      // BLUE2
+
+#define LED1_SET                    (0x01)
+#define LED2_SET                    (0x02)
+#define LED3_SET                    (0x04)
+#define LED4_SET                    (0x08)
+#define LED5_SET                    (0x10)
+*/
+
+// ======= END =========
 
 // Mosfet output
-#define MOSFET_OUT_PIN GPIO_PIN_13
-#define MOSFET_OUT_PORT GPIOC
+//#define MOSFET_OUT_PIN GPIO_PIN_13
+//#define MOSFET_OUT_PORT GPIOC
 
 // Brushless Control DC (BLDC) defines
 // Channel G

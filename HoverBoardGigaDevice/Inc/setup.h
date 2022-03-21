@@ -31,7 +31,6 @@
 #ifndef SETUP_H
 #define SETUP_H
 
-#include "gd32f1x0.h"
 #include "../Inc/config.h"
 
 
@@ -49,7 +48,7 @@ void Interrupt_init(void);
 //----------------------------------------------------------------------------
 // Initializes the watchdog
 //----------------------------------------------------------------------------
-ErrStatus Watchdog_init(void);
+//ErrStatus Watchdog_init(void);
 
 //----------------------------------------------------------------------------
 // Initializes the timeout timer
