@@ -56,13 +56,11 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c \
 Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c \
 Src/main.c \
+Src/setup.c \
 Src/misc.c \
-Src/gpio.c \
-Src/blink.c \
-#Src/setup.c \
-#Src/led.c \
+Src/led.c \
+Src/it.c \
 #Src/bldc.c \
-#Src/it.c \
 #Src/comms.c \
 #Src/commsMasterSlave.c \
 #Src/commsSteering.c \

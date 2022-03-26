@@ -1,6 +1,8 @@
 #include "config.h"
 #include "defines.h"
 
+void delay(uint16_t ms);
+
 void gpio_bit_write(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
 
 void gpio_mode_set(GPIO_TypeDef* GPIOx, uint32_t mode, uint32_t pull, uint16_t GPIO_Pin);

@@ -29,9 +29,11 @@
 */
 
 #include "../Inc/config.h"
-#include "../Inc/setup.h"
 #include "../Inc/defines.h"
+#include "../Inc/setup.h"
 #include "../Inc/it.h"
+
+#ifdef USE_GD32F130C8
 
 #define TIMEOUT_FREQ  1000
 
@@ -52,20 +54,26 @@ uint8_t usartSteer_COM_rx_buf[USART_STEER_COM_RX_BUFFERSIZE];
 dma_parameter_struct dma_init_struct_adc;
 extern adc_buf_t adc_buffer;
 
+#endif
+
 //----------------------------------------------------------------------------
 // Initializes the interrupts
 //----------------------------------------------------------------------------
 
 void Interrupt_init(void)
 {
+#ifdef USE_GD32F130C8
   	// Set IRQ priority configuration
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
+#endif
 }
 
 
 //----------------------------------------------------------------------------
 // Initializes the watchdog
 //----------------------------------------------------------------------------
+
+#ifdef USE_GD32F130C8
 
 ErrStatus Watchdog_init(void)
 {
@@ -91,6 +99,8 @@ ErrStatus Watchdog_init(void)
 
 	return SUCCESS;
 }
+#endif
+
 
 
 //----------------------------------------------------------------------------
@@ -99,6 +109,8 @@ ErrStatus Watchdog_init(void)
 
 void TimeoutTimer_init(void)
 {
+#ifdef USE_GD32F130C8
+
 	// Enable timer clock
 	rcu_periph_clock_enable(RCU_TIMER13);
 
@@ -122,6 +134,7 @@ void TimeoutTimer_init(void)
 
 	// Enable timer
 	timer_enable(TIMER13);
+#endif
 }
 
 
@@ -130,6 +143,41 @@ void TimeoutTimer_init(void)
 //----------------------------------------------------------------------------
 void GPIO_init(void)
 {
+#ifdef USE_STM32F103C8
+
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+
+  // Configure GPIO pins for all LEDs except LED_RED
+  GPIO_InitStruct.Pin = LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_RED|LED_ORANGE;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  // Configure LED_RED
+  GPIO_InitStruct.Pin = LED_RED;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  //HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  // Turn on all LEDs. 
+  HAL_GPIO_WritePin(GPIOB, LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_ORANGE, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_RESET);    // turn PC13 on
+
+  // Turn off LEDs
+  //HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_SET);    // turn PC13 off
+
+#endif
+
+#ifdef USE_GD32F130C8
+
 	// Enable all GPIO clocks
 	rcu_periph_clock_enable(RCU_GPIOA);
 	rcu_periph_clock_enable(RCU_GPIOB);
@@ -231,6 +279,9 @@ void GPIO_init(void)
 	// Init charge state
 	gpio_mode_set(CHARGE_STATE_PORT, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, CHARGE_STATE_PIN);
 #endif
+
+#endif // USE_GD32F130C8
+
 }
 
 
@@ -240,6 +291,8 @@ void GPIO_init(void)
 
 void PWM_init(void)
 {
+
+#ifdef USE_GD32F130C8
 	// Enable timer clock
 	rcu_periph_clock_enable(RCU_TIMER_BLDC);
 
@@ -320,6 +373,7 @@ void PWM_init(void)
 
 	// Enable the timer and start PWM
 	timer_enable(TIMER_BLDC);
+#endif
 }
 
 
@@ -329,6 +383,7 @@ void PWM_init(void)
 
 void ADC_init(void)
 {
+#ifdef USE_GD32F130C8
 	// Enable ADC and DMA clock
 	rcu_periph_clock_enable(RCU_ADC);
 	rcu_periph_clock_enable(RCU_DMA);
@@ -392,6 +447,7 @@ void ADC_init(void)
 
 	// Set ADC to scan mode
 	adc_special_function_config(ADC_SCAN_MODE, ENABLE);
+#endif
 }
 
 
@@ -401,6 +457,8 @@ void ADC_init(void)
 
 void USART_MasterSlave_init(void)
 {
+#ifdef USE_GD32F130C8
+
 	// Enable ADC and DMA clock
 	rcu_periph_clock_enable(RCU_USART1);
 	rcu_periph_clock_enable(RCU_DMA);
@@ -450,6 +508,7 @@ void USART_MasterSlave_init(void)
 
 	// Enable dma receive channel
 	dma_channel_enable(DMA_CH4);
+#endif
 }
 
 
@@ -459,7 +518,8 @@ void USART_MasterSlave_init(void)
 
 void USART_Steer_COM_init(void)
 {
-		// Enable ADC and DMA clock
+#ifdef USE_GD32F130C8
+	// Enable ADC and DMA clock
 	rcu_periph_clock_enable(RCU_USART0);
 	rcu_periph_clock_enable(RCU_DMA);
 
@@ -508,5 +568,6 @@ void USART_Steer_COM_init(void)
 
 	// Enable dma receive channel
 	dma_channel_enable(DMA_CH2);
+#endif
 }
 

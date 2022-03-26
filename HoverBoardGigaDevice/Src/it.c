@@ -29,13 +29,13 @@
 */
 
 #include "../Inc/config.h"
-#include "../Inc/it.h"
 #include "../Inc/defines.h"
-#include "../Inc/bldc.h"
 #include "../Inc/led.h"
-#include "../Inc/commsMasterSlave.h"
-#include "../Inc/commsSteering.h"
-#include "../Inc/commsBluetooth.h"
+#include "../Inc/it.h"
+//#include "../Inc/bldc.h"
+//#include "../Inc/commsMasterSlave.h"
+//#include "../Inc/commsSteering.h"
+//#include "../Inc/commsBluetooth.h"
 
 uint32_t msTicks;
 uint32_t timeoutCounter_ms = 0;
@@ -55,7 +55,12 @@ extern FlagStatus beepsBackwards;
 //----------------------------------------------------------------------------
 void SysTick_Handler(void)
 {
+#ifdef USE_STM32F103C8
+  HAL_IncTick();
+#endif
+#ifdef USE_GD32F130C8
   msTicks++;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -66,6 +71,7 @@ void ResetTimeout(void)
   timeoutCounter_ms = 0;
 }
 
+/*
 //----------------------------------------------------------------------------
 // Timer13_Update_Handler
 // Is called when upcouting of timer13 is finished and the UPDATE-flag is set
@@ -189,6 +195,7 @@ void DMA_Channel3_4_IRQHandler(void)
 		dma_interrupt_flag_clear(DMA_CH4, DMA_INT_FLAG_FTF);
 	}
 }
+*/
 
 //----------------------------------------------------------------------------
 // Returns number of milliseconds since system start

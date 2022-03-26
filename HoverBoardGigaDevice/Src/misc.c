@@ -29,6 +29,12 @@
 
 // --------- Misc GD functions (implemented by STM functions) ------------
 
+void delay (uint16_t ms)  // to be replaced by Delay defined in it.c
+{
+        volatile int count = 1000 * ms;
+        while ( count-- );
+}
+
 void gpio_bit_write(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState)
 //   gpio_bit_write(LED_GREEN_PORT, LED_GREEN, SET);
 {

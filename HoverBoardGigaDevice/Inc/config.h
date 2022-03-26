@@ -1,4 +1,7 @@
 /*
+*
+* 3-23-2022, WMS, Modified for both GD32F130C8 and STM32F103C8
+*
 * This file is part of the hoverboard-firmware-hack-V2 project. The 
 * firmware is used to hack the generation 2 board of the hoverboard.
 * These new hoverboards have no mainboard anymore. They consist of 
@@ -31,8 +34,22 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-//#include "gd32f1x0.h"
+// ################################################################################
+
+// select device
+#define USE_STM32F103C8
+//#define USE_GD32F130C8
+
+#ifdef USE_STM32F103C8
 #include "stm32f1xx_hal.h"
+#endif
+
+#ifdef USE_GD32F130C8
+#include "gd32f1x0.h"
+#endif
+
+// ################################################################################
+
 
 // ################################################################################
 
@@ -43,7 +60,7 @@
 // ################################################################################
 
 #define PWM_FREQ         		16000     // PWM frequency in Hz
-#define DEAD_TIME        		60        // PWM deadtime (60 = 1µs, measured by oscilloscope)
+#define DEAD_TIME        		60        // PWM deadtime (60 = 1ns, measured by oscilloscope)
 
 #define DC_CUR_LIMIT     		15        // Motor DC current limit in amps
 

@@ -58,6 +58,8 @@ void SysTick_Handler(void);
 void DMA1_Channel1_IRQHandler(void);
 void DMA2_Channel4_5_IRQHandler(void);
 
+void Delay (uint32_t dlyTicks)
+
 #ifdef __cplusplus
 }
 #endif

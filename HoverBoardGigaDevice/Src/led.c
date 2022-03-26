@@ -31,6 +31,7 @@
 #include "../Inc/config.h"
 #include "../Inc/led.h"
 #include "../Inc/defines.h"
+#include "../Inc/misc.h"
 
 // Only slave has LED mechanism
 #ifdef SLAVE

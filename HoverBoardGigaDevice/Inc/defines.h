@@ -1,40 +1,33 @@
-/*
-* This file is part of the hoverboard-firmware-hack-V2 project. The 
-* firmware is used to hack the generation 2 board of the hoverboard.
-* These new hoverboards have no mainboard anymore. They consist of 
-* two Sensorboards which have their own BLDC-Bridge per Motor and an
-* ARM Cortex-M3 processor GD32F130C8.
-*
-* Copyright (C) 2018 Florian Staeblein
-* Copyright (C) 2018 Jakob Broemauer
-* Copyright (C) 2018 Kai Liebich
-* Copyright (C) 2018 Christoph Lehnert
-*
-* The program is based on the hoverboard project by Niklas Fauth. The 
-* structure was tried to be as similar as possible, so that everyone 
-* could find a better way through the code.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#include "../Inc/config.h"
+//===================================================
+#ifdef USE_STM32F103C8
 
-// ======= LED defines for GD32 =========
-/*
+// GPIO LED
+
+#define LED_GREEN GPIO_PIN_9            // LED2 by FERU
+#define LED_GREEN_PORT GPIOB
+#define LED_ORANGE GPIO_PIN_8           // LED3 by FERU
+#define LED_ORANGE_PORT GPIOB
+//#define LED_RED GPIO_PIN_0            // LED1 by FERU
+//#define LED_RED_PORT GPIOA
+#define UPPER_LED_PIN GPIO_PIN_4        // LED5 in PERU
+#define UPPER_LED_PORT GPIOB
+#define LOWER_LED_PIN GPIO_PIN_5        // LED4 in FERU
+#define LOWER_LED_PORT GPIOB
+
+// to test using the red led on bluepill
+#define LED_RED GPIO_PIN_13     // testing on Bluepill
+#define LED_RED_PORT GPIOC      // testing on Bluepill
+
+#endif // USE_STM32F103C8
+
+
+//======================================
+#ifdef USE_GD32F130C8
+
+// LED defines
 #define LED_GREEN GPIO_PIN_15
 #define LED_GREEN_PORT GPIOA
 #define LED_ORANGE GPIO_PIN_12
@@ -46,44 +39,9 @@
 #define UPPER_LED_PORT GPIOA
 #define LOWER_LED_PIN GPIO_PIN_0
 #define LOWER_LED_PORT GPIOA
-*/
 
-// ======= LED defines FOR STM32/Bluepill =========
-
-#define LED_GREEN GPIO_PIN_9		// LED2 by FERU
-#define LED_GREEN_PORT GPIOB
-#define LED_ORANGE GPIO_PIN_8		// LED3 by FERU
-#define LED_ORANGE_PORT GPIOB
-//#define LED_RED GPIO_PIN_0		// LED1 by FERU
-//#define LED_RED_PORT GPIOA
-#define LED_RED GPIO_PIN_13  	// testing on Bluepill
-#define LED_RED_PORT GPIOC	// for testing on Bluepill
-
-#define UPPER_LED_PIN GPIO_PIN_4	// LED5 in PERU
-#define UPPER_LED_PORT GPIOB
-#define LOWER_LED_PIN GPIO_PIN_5	// LED4 in FERU
-#define LOWER_LED_PORT GPIOB
-
-/* ========(for reference)========= Defines LEDs by FERU ==========
-#define LED1_GPIO_Port              GPIOA
-#define LED1_Pin                    GPIO_PIN_0      // RED
-#define LED2_GPIO_Port              GPIOB
-#define LED2_Pin                    GPIO_PIN_9      // GREEN
-#define LED3_GPIO_Port              GPIOB
-#define LED3_Pin                    GPIO_PIN_8      // YELLOW
-#define LED4_GPIO_Port              GPIOB
-#define LED4_Pin                    GPIO_PIN_5      // BLUE1
-#define LED5_GPIO_Port              GPIOB
-#define LED5_Pin                    GPIO_PIN_4      // BLUE2
-
-#define LED1_SET                    (0x01)
-#define LED2_SET                    (0x02)
-#define LED3_SET                    (0x04)
-#define LED4_SET                    (0x08)
-#define LED5_SET                    (0x10)
-*/
-
-// ======= END =========
+#endif // USE_GD32F130C8
+//=======================================
 
 // Mosfet output
 #define MOSFET_OUT_PIN GPIO_PIN_13
@@ -185,3 +143,4 @@ typedef struct
 } adc_buf_t;
 
 #endif
+
