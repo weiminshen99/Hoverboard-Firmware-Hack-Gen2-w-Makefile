@@ -32,10 +32,10 @@
 #include "../Inc/defines.h"
 #include "../Inc/led.h"
 #include "../Inc/it.h"
-//#include "../Inc/bldc.h"
-//#include "../Inc/commsMasterSlave.h"
-//#include "../Inc/commsSteering.h"
-//#include "../Inc/commsBluetooth.h"
+#include "../Inc/bldc.h"
+#include "../Inc/commsMasterSlave.h"
+#include "../Inc/commsSteering.h"
+#include "../Inc/commsBluetooth.h"
 
 uint32_t msTicks;
 uint32_t timeoutCounter_ms = 0;
@@ -50,13 +50,17 @@ extern int32_t speed;
 extern FlagStatus activateWeakening;
 extern FlagStatus beepsBackwards;
 
+#ifdef USE_STM32F103C8
+TIM_HandleTypeDef  Tim2Handle;	// timeout uses timer2
+#endif
+
 //----------------------------------------------------------------------------
 // SysTick_Handler
 //----------------------------------------------------------------------------
 void SysTick_Handler(void)
 {
 #ifdef USE_STM32F103C8
-  HAL_IncTick();
+  HAL_IncTick();	// this is needed for HAL_Delay()
 #endif
 #ifdef USE_GD32F130C8
   msTicks++;
@@ -71,13 +75,18 @@ void ResetTimeout(void)
   timeoutCounter_ms = 0;
 }
 
-/*
 //----------------------------------------------------------------------------
 // Timer13_Update_Handler
 // Is called when upcouting of timer13 is finished and the UPDATE-flag is set
 // -> period of timer13 running with 1kHz -> interrupt every 1ms
 //----------------------------------------------------------------------------
+
+#ifdef USE_GD32F130C8
 void TIMER13_IRQHandler(void)
+#endif
+#ifdef USE_STM32F103C8
+void TIM2_IRQHandler(void)
+#endif
 {
 	if (timeoutCounter_ms > TIMEOUT_MS)
 	{
@@ -106,7 +115,7 @@ void TIMER13_IRQHandler(void)
 	if (hornCounter_ms >= 2000)
 	{
 		// Avoid horn to be activated longer than 2 seconds
-		SetUpperLEDMaster(RESET);
+//		SetUpperLEDMaster(RESET);
 	}
 	else if (hornCounter_ms < 2000)
 	{
@@ -114,12 +123,33 @@ void TIMER13_IRQHandler(void)
 	}
 
 	// Update LED program
-	CalculateLEDProgram();
+	HAL_GPIO_TogglePin(GPIOC, MOSFET_OUT_PIN); // testing
+	//CalculateLEDProgram();
 #endif
 
 	// Clear timer update interrupt flag
+#ifdef USE_GD32F130C8
 	timer_interrupt_flag_clear(TIMER13, TIMER_INT_UP);
+#endif
+
+#ifdef USE_STM32F103C8
+	// clear the current interrupt of Timer2
+	__HAL_TIM_CLEAR_IT(&Tim2Handle, TIM_IT_UPDATE);
+        //struct timer *tp = TIMER2_BASE;
+        //tp->sr = 0;     // cancel/clear the interrupt
+#endif
 }
+
+//#ifdef USE_STM32F103C8
+//void timer_clear_flag(uint32_t timer_peripheral, uint32_t flag)
+//{
+//        TIM_SR(timer_peripheral) = ~flag;
+//}
+//#endif
+
+
+// ===============================
+#ifdef USE_GD32F130C8
 
 //----------------------------------------------------------------------------
 // Timer0_Update_Handler
@@ -195,7 +225,6 @@ void DMA_Channel3_4_IRQHandler(void)
 		dma_interrupt_flag_clear(DMA_CH4, DMA_INT_FLAG_FTF);
 	}
 }
-*/
 
 //----------------------------------------------------------------------------
 // Returns number of milliseconds since system start
@@ -218,6 +247,8 @@ void Delay (uint32_t dlyTicks)
 		__NOP();
 	}
 }
+
+#endif // USE_GD32F130C8
 
 //----------------------------------------------------------------------------
 // This function handles Non maskable interrupt.

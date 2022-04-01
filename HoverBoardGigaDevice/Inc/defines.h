@@ -1,30 +1,107 @@
-#ifndef DEFINES_H
-#define DEFINES_H
 
 //===================================================
 #ifdef USE_STM32F103C8
 
 // GPIO LED
 
-#define LED_GREEN GPIO_PIN_9            // LED2 by FERU
+#define LED_GREEN GPIO_PIN_9
 #define LED_GREEN_PORT GPIOB
-#define LED_ORANGE GPIO_PIN_8           // LED3 by FERU
+#define LED_ORANGE GPIO_PIN_8
 #define LED_ORANGE_PORT GPIOB
-//#define LED_RED GPIO_PIN_0            // LED1 by FERU
-//#define LED_RED_PORT GPIOA
-#define UPPER_LED_PIN GPIO_PIN_4        // LED5 in PERU
+#define LED_RED GPIO_PIN_0
+#define LED_RED_PORT GPIOA
+#define UPPER_LED_PIN GPIO_PIN_4
 #define UPPER_LED_PORT GPIOB
-#define LOWER_LED_PIN GPIO_PIN_5        // LED4 in FERU
+#define LOWER_LED_PIN GPIO_PIN_5
 #define LOWER_LED_PORT GPIOB
 
-// to test using the red led on bluepill
-#define LED_RED GPIO_PIN_13     // testing on Bluepill
-#define LED_RED_PORT GPIOC      // testing on Bluepill
+// Mosfet output
+#define MOSFET_OUT_PIN GPIO_PIN_13
+#define MOSFET_OUT_PORT GPIOC
+
+// BLCD defines, use stm32/TIM1 for GD32/TIMER0
+#define RIGHT_TIM TIM1
+#define RIGHT_TIM_U CCR1
+#define RIGHT_TIM_UH_PIN GPIO_PIN_8
+#define RIGHT_TIM_UH_PORT GPIOA
+#define RIGHT_TIM_UL_PIN GPIO_PIN_13
+#define RIGHT_TIM_UL_PORT GPIOB
+#define RIGHT_TIM_V CCR2
+#define RIGHT_TIM_VH_PIN GPIO_PIN_9
+#define RIGHT_TIM_VH_PORT GPIOA
+#define RIGHT_TIM_VL_PIN GPIO_PIN_14
+#define RIGHT_TIM_VL_PORT GPIOB
+#define RIGHT_TIM_W CCR3
+#define RIGHT_TIM_WH_PIN GPIO_PIN_10
+#define RIGHT_TIM_WH_PORT GPIOA
+#define RIGHT_TIM_WL_PIN GPIO_PIN_15
+#define RIGHT_TIM_WL_PORT GPIOB
+
+#define RIGHT_DC_CUR_PIN GPIO_PIN_1
+#define RIGHT_U_CUR_PIN GPIO_PIN_4
+#define RIGHT_V_CUR_PIN GPIO_PIN_5
+
+#define RIGHT_DC_CUR_PORT GPIOC
+#define RIGHT_U_CUR_PORT GPIOC
+#define RIGHT_V_CUR_PORT GPIOC
+
+// Hall sensor defines.
+#define RIGHT_HALL_U_PIN GPIO_PIN_10
+#define RIGHT_HALL_V_PIN GPIO_PIN_11
+#define RIGHT_HALL_W_PIN GPIO_PIN_12
+
+#define RIGHT_HALL_U_PORT GPIOC
+#define RIGHT_HALL_V_PORT GPIOC
+#define RIGHT_HALL_W_PORT GPIOC
+
+// For slave LEDs, Maybe use stm32/TIM2 for gd32/TIMER13
+
+#define BUTTON_PIN GPIO_PIN_1
+#define BUTTON_PORT GPIOA
+
+#define SWITCH_PIN GPIO_PIN_1
+#define SWITCH_PORT GPIOA
+
+#define OFF_PIN GPIO_PIN_5
+#define OFF_PORT GPIOA
+
+#ifdef MASTER
+#define BUZZER_PIN GPIO_PIN_4
+#define BUZZER_PORT GPIOA
+
+#define CHARGER_PIN GPIO_PIN_12
+#define CHARGER_PORT GPIOA
+#endif
+
+#define DELAY_TIM_FREQUENCY_US 1000000
+
+#define MOTOR_AMP_CONV_DC_AMP 0.02  // A per bit (12) on ADC.
+
+#define MILLI_R (R * 1000)
+#define MILLI_PSI (PSI * 1000)
+#define MILLI_V (V * 1000)
+
+#define NO 0
+#define YES 1
+#define ABS(a) (((a) < 0.0) ? -(a) : (a))
+#define LIMIT(x, lowhigh) (((x) > (lowhigh)) ? (lowhigh) : (((x) < (-lowhigh)) ? (-lowhigh) : (x)))
+#define SAT(x, lowhigh) (((x) > (lowhigh)) ? (1.0) : (((x) < (-lowhigh)) ? (-1.0) : (0.0)))
+#define SAT2(x, low, high) (((x) > (high)) ? (1.0) : (((x) < (low)) ? (-1.0) : (0.0)))
+#define STEP(from, to, step) (((from) < (to)) ? (MIN((from) + (step), (to))) : (MAX((from) - (step),(to))))
+#define DEG(a) ((a)*M_PI / 180.0)
+#define RAD(a) ((a)*180.0 / M_PI)
+#define SIGN(a) (((a) < 0.0) ? (-1.0) : (((a) > 0.0) ? (1.0) : (0.0)))
+#define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define SCALE(value, high, max) MIN(MAX(((max) - (value)) / ((max) - (high)), 0.0), 1.0)
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN3(a, b, c) MIN(a, MIN(b, c))
+#define MAX3(a, b, c) MAX(a, MAX(b, c))
 
 #endif // USE_STM32F103C8
 
 
-//======================================
+//===============================================
 #ifdef USE_GD32F130C8
 
 // LED defines
@@ -40,30 +117,27 @@
 #define LOWER_LED_PIN GPIO_PIN_0
 #define LOWER_LED_PORT GPIOA
 
-#endif // USE_GD32F130C8
-//=======================================
-
 // Mosfet output
 #define MOSFET_OUT_PIN GPIO_PIN_13
 #define MOSFET_OUT_PORT GPIOC
 
-// Brushless Control DC (BLDC) defines
+// Brushless Control DC (BLDC) defines		// STM32
 // Channel G
-#define RCU_TIMER_BLDC RCU_TIMER0
-#define TIMER_BLDC TIMER0
-#define TIMER_BLDC_CHANNEL_G TIMER_CH_2
+#define RCU_TIMER_BLDC RCU_TIMER0		// RCU_TIM1
+#define TIMER_BLDC TIMER0			// TIM1
+#define TIMER_BLDC_CHANNEL_G TIMER_CH_2		// = CCR3 ?
 #define TIMER_BLDC_GH_PIN GPIO_PIN_10
 #define TIMER_BLDC_GH_PORT GPIOA
 #define TIMER_BLDC_GL_PIN GPIO_PIN_15
 #define TIMER_BLDC_GL_PORT GPIOB
 // Channel B
-#define TIMER_BLDC_CHANNEL_B TIMER_CH_1
+#define TIMER_BLDC_CHANNEL_B TIMER_CH_1		// = CCR2 ?
 #define TIMER_BLDC_BH_PIN GPIO_PIN_9
 #define TIMER_BLDC_BH_PORT GPIOA
 #define TIMER_BLDC_BL_PIN GPIO_PIN_14
 #define TIMER_BLDC_BL_PORT GPIOB
 // Channel Y
-#define TIMER_BLDC_CHANNEL_Y TIMER_CH_0
+#define TIMER_BLDC_CHANNEL_Y TIMER_CH_0		// = CCR1 ?
 #define TIMER_BLDC_YH_PIN GPIO_PIN_8
 #define TIMER_BLDC_YH_PORT GPIOA
 #define TIMER_BLDC_YL_PIN GPIO_PIN_13
@@ -142,5 +216,6 @@ typedef struct
 	uint16_t current_dc;
 } adc_buf_t;
 
-#endif
+#endif // USE_GD32130C8
+
 

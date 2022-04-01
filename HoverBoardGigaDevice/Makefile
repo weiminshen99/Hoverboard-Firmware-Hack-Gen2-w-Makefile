@@ -57,9 +57,11 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c \
 Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/system_stm32f1xx.c \
 Src/main.c \
 Src/setup.c \
-Src/misc.c \
-Src/led.c \
 Src/it.c \
+Src/led.c \
+Src/setup_tim2.c \
+#Src/misc.c \
+#Src/nvic.c \
 #Src/bldc.c \
 #Src/comms.c \
 #Src/commsMasterSlave.c \
@@ -207,7 +209,7 @@ unlock:
 
 gdb:	$(BUILD_DIR)/$(TARGET).elf
 #	st-util -p 4242 & // you may type this once
-	$(GDB) --eval-command="target extended-remote :4242" $(BUILD_DIR)/$(TARGET).elf
+	$(GDB) --eval-command="target extended-remote :4242" $<
 
 #######################################
 # dependencies

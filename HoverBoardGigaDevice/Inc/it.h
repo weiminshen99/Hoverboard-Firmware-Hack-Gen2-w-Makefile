@@ -11,11 +11,14 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
-void Delay (uint32_t dlyTicks);
+void ResetTimeout(void);
 
 #ifdef USE_STM32F103C8
+void TIM2_IRQHandler(void);		// use TIM2 to replace gd32/TIMER13
+void TIM1_BRK_UP_TRG_COM_IRQHandler(void);
+#endif // USE_STM32F103C8
 
-void ResetTimeout(void);
+#ifdef USE_GD32F130C8
 void TIMER13_IRQHandler(void);
 void TIMER0_BRK_UP_TRG_COM_IRQHandler(void);
 void DMA_Channel0_IRQHandler(void);
@@ -23,11 +26,6 @@ void DMA_Channel1_2_IRQHandler(void);
 void DMA_Channel3_4_IRQHandler(void);
 void DMA1_Channel1_IRQHandler(void);
 void DMA2_Channel4_5_IRQHandler(void);
-
-#endif // USE_STM32F103C8
-
-#ifdef USE_GD32F130C8
-
 void USART0_IRQHandler(void);
 void USART1_IRQHandler(void);
 void I2C0_EV_IRQHandler(void);
@@ -36,7 +34,7 @@ void I2C0_ER_IRQHandler(void);
 void I2C1_EV_IRQHandler(void);
 void I2C1_ER_IRQHandler(void);
 #endif
-
+void Delay (uint32_t dlyTicks);
 #endif // USE_GD32F130C8
 
 #endif // _IT_H

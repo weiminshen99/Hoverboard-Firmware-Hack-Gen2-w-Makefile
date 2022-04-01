@@ -1,6 +1,8 @@
 #include "config.h"
 #include "defines.h"
 
+void intro_demo_led(uint32_t tDelay);
+
 void delay(uint16_t ms);
 
 void gpio_bit_write(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);

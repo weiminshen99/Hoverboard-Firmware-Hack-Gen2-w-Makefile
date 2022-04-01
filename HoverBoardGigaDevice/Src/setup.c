@@ -33,9 +33,15 @@
 #include "../Inc/setup.h"
 #include "../Inc/it.h"
 
-#ifdef USE_GD32F130C8
-
 #define TIMEOUT_FREQ  1000
+
+#ifdef USE_STM32F103C8
+
+TIM_HandleTypeDef  Tim2Handle;	// for timer2 as the timeout
+
+#endif
+
+#ifdef USE_GD32F130C8
 
 // timeout timer parameter structs
 timer_parameter_struct timeoutTimer_paramter_struct;
@@ -62,10 +68,13 @@ extern adc_buf_t adc_buffer;
 
 void Interrupt_init(void)
 {
+
 #ifdef USE_GD32F130C8
   	// Set IRQ priority configuration
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
+
 #endif
+
 }
 
 
@@ -99,16 +108,28 @@ ErrStatus Watchdog_init(void)
 
 	return SUCCESS;
 }
+
 #endif
-
-
 
 //----------------------------------------------------------------------------
 // Initializes the timeout timer
 //----------------------------------------------------------------------------
-
 void TimeoutTimer_init(void)
 {
+
+#ifdef USE_STM32F103C8
+
+	TIM2_Init();
+
+	// timer2 init and start it with interrupt. See setup_tim2.c
+//	if (HAL_TIM_Base_Init(&Tim2Handle) == HAL_OK)
+//    	HAL_TIM_Base_Start_IT(&Tim2Handle);
+
+	//if (HAL_InitTick(0) == HAL_OK) { // don't use this, it will effect all other timers
+	   // timers started well, see setup_tim2.c
+
+#endif
+
 #ifdef USE_GD32F130C8
 
 	// Enable timer clock
@@ -135,6 +156,7 @@ void TimeoutTimer_init(void)
 	// Enable timer
 	timer_enable(TIMER13);
 #endif
+
 }
 
 
@@ -152,27 +174,33 @@ void GPIO_init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
-  // Configure GPIO pins for all LEDs except LED_RED
-  GPIO_InitStruct.Pin = LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_RED|LED_ORANGE;
+  // Configure GPIO Port B pins for the LEDs there
+  GPIO_InitStruct.Pin = LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_ORANGE;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  // Configure LED_RED
+  // Configure LED_RED on Port A
   GPIO_InitStruct.Pin = LED_RED;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  //HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  // Configure Port C for MOSFET_OUT on PC13
+  GPIO_InitStruct.Pin = MOSFET_OUT_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  // Turn on all LEDs. 
-  HAL_GPIO_WritePin(GPIOB, LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_ORANGE, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_RESET);    // turn PC13 on
-
-  // Turn off LEDs
+  // exampels for Turn on/off  LEDs.
+  //HAL_GPIO_WritePin(GPIOB, LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_ORANGE, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_RESET);    	// turn PC13 on
   //HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_SET);    // turn PC13 off
+  //HAL_GPIO_WritePin(GPIOC, MOSFET_OUT_PIN, GPIO_PIN_RESET);    	// turn PC13 on
+  //HAL_GPIO_WritePin(GPIOC, MOSFET_OUT_PIN, GPIO_PIN_RESET);    	// turn PC13 off
 
 #endif
 
