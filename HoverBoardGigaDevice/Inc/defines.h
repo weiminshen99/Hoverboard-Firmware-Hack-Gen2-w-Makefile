@@ -19,43 +19,54 @@
 #define MOSFET_OUT_PIN GPIO_PIN_13
 #define MOSFET_OUT_PORT GPIOC
 
-// BLCD defines, use stm32/TIM1 for GD32/TIMER0
-#define RIGHT_TIM TIM1
-#define RIGHT_TIM_U CCR1
-#define RIGHT_TIM_UH_PIN GPIO_PIN_8
-#define RIGHT_TIM_UH_PORT GPIOA
-#define RIGHT_TIM_UL_PIN GPIO_PIN_13
-#define RIGHT_TIM_UL_PORT GPIOB
-#define RIGHT_TIM_V CCR2
-#define RIGHT_TIM_VH_PIN GPIO_PIN_9
-#define RIGHT_TIM_VH_PORT GPIOA
-#define RIGHT_TIM_VL_PIN GPIO_PIN_14
-#define RIGHT_TIM_VL_PORT GPIOB
-#define RIGHT_TIM_W CCR3
-#define RIGHT_TIM_WH_PIN GPIO_PIN_10
-#define RIGHT_TIM_WH_PORT GPIOA
-#define RIGHT_TIM_WL_PIN GPIO_PIN_15
-#define RIGHT_TIM_WL_PORT GPIOB
+// Brushless Control DC (BLDC) defines
 
-#define RIGHT_DC_CUR_PIN GPIO_PIN_1
-#define RIGHT_U_CUR_PIN GPIO_PIN_4
-#define RIGHT_V_CUR_PIN GPIO_PIN_5
+#define RCU_TIMER_BLDC RCU_TIMER0
+#define TIMER_BLDC TIM1
 
-#define RIGHT_DC_CUR_PORT GPIOC
-#define RIGHT_U_CUR_PORT GPIOC
-#define RIGHT_V_CUR_PORT GPIOC
+// Channel G					// = CCR3, Channel W in FAUTH
+#define TIMER_BLDC_CHANNEL_G CCR3
+#define TIMER_BLDC_GH_PIN GPIO_PIN_10
+#define TIMER_BLDC_GH_PORT GPIOA
+#define TIMER_BLDC_GL_PIN GPIO_PIN_15
+#define TIMER_BLDC_GL_PORT GPIOB
+
+// Channel B					// = CCR2, Channel V in FAUTH
+#define TIMER_BLDC_CHANNEL_B CCR2
+#define TIMER_BLDC_BH_PIN GPIO_PIN_9
+#define TIMER_BLDC_BH_PORT GPIOA
+#define TIMER_BLDC_BL_PIN GPIO_PIN_14
+#define TIMER_BLDC_BL_PORT GPIOB
+
+// Channel Y					// = CCR1, Channel U in FAUTH
+#define TIMER_BLDC_CHANNEL_Y CCR1
+#define TIMER_BLDC_YH_PIN GPIO_PIN_8
+#define TIMER_BLDC_YH_PORT GPIOA
+#define TIMER_BLDC_YL_PIN GPIO_PIN_13
+#define TIMER_BLDC_YL_PORT GPIOB
+
+// Timer BLDC short circuit emergency shutoff define
+#define TIMER_BLDC_EMERGENCY_SHUTDOWN_PIN GPIO_PIN_12
+#define TIMER_BLDC_EMERGENCY_SHUTDOWN_PORT GPIOB
+
+// ADC defines
+#define VBATT_PIN GPIO_PIN_4
+#define VBATT_PORT GPIOA
+#define VBATT_CHANNEL ADC_CHANNEL_4
+
+#define CURRENT_DC_PIN GPIO_PIN_6
+#define CURRENT_DC_PORT GPIOA
+#define CURRENT_DC_CHANNEL ADC_CHANNEL_6
 
 // Hall sensor defines.
-#define RIGHT_HALL_U_PIN GPIO_PIN_10
-#define RIGHT_HALL_V_PIN GPIO_PIN_11
-#define RIGHT_HALL_W_PIN GPIO_PIN_12
+#define HALL_A_PIN GPIO_PIN_10	// = RIGHT_HALL_U_PIN in FAUTH
+#define HALL_A_PORT GPIOC
+#define HALL_B_PIN GPIO_PIN_11	// = RIGHT_HALL_V_PIN in FAUTH
+#define HALL_B_PORT GPIOC
+#define HALL_C_PIN GPIO_PIN_12	// = RIGHT_HALL_W_PIN in FAUTH
+#define HALL_C_PORT GPIOC
 
-#define RIGHT_HALL_U_PORT GPIOC
-#define RIGHT_HALL_V_PORT GPIOC
-#define RIGHT_HALL_W_PORT GPIOC
-
-// For slave LEDs, Maybe use stm32/TIM2 for gd32/TIMER13
-
+// Button
 #define BUTTON_PIN GPIO_PIN_1
 #define BUTTON_PORT GPIOA
 
@@ -64,18 +75,24 @@
 
 #define OFF_PIN GPIO_PIN_5
 #define OFF_PORT GPIOA
+// Self hold defines =?= OFF_PIN
+#define SELF_HOLD_PIN GPIO_PIN_5
+#define SELF_HOLD_PORT GPIOA
+
+// Debug pin defines (use PC13 in STM32)
+#define DEBUG_PIN GPIO_PIN_13
+#define DEBUG_PORT GPIOC
 
 #ifdef MASTER
+// Buzzer defins
 #define BUZZER_PIN GPIO_PIN_4
 #define BUZZER_PORT GPIOA
-
-#define CHARGER_PIN GPIO_PIN_12
-#define CHARGER_PORT GPIOA
+// Charge state defines
+#define CHARGE_STATE_PIN GPIO_PIN_12
+#define CHARGE_STATE_PORT GPIOA
 #endif
 
 #define DELAY_TIM_FREQUENCY_US 1000000
-
-#define MOTOR_AMP_CONV_DC_AMP 0.02  // A per bit (12) on ADC.
 
 #define MILLI_R (R * 1000)
 #define MILLI_PSI (PSI * 1000)
@@ -98,11 +115,10 @@
 #define MIN3(a, b, c) MIN(a, MIN(b, c))
 #define MAX3(a, b, c) MAX(a, MAX(b, c))
 
-#endif // USE_STM32F103C8
+#endif // USE_STM32F103C8 -------------------------------
 
 
-//===============================================
-#ifdef USE_GD32F130C8
+#ifdef USE_GD32F130C8 // -----------------------
 
 // LED defines
 #define LED_GREEN GPIO_PIN_15
@@ -121,10 +137,10 @@
 #define MOSFET_OUT_PIN GPIO_PIN_13
 #define MOSFET_OUT_PORT GPIOC
 
-// Brushless Control DC (BLDC) defines		// STM32
+// Brushless Control DC (BLDC) defines
 // Channel G
-#define RCU_TIMER_BLDC RCU_TIMER0		// RCU_TIM1
-#define TIMER_BLDC TIMER0			// TIM1
+#define RCU_TIMER_BLDC RCU_TIMER0
+#define TIMER_BLDC TIMER0
 #define TIMER_BLDC_CHANNEL_G TIMER_CH_2		// = CCR3 ?
 #define TIMER_BLDC_GH_PIN GPIO_PIN_10
 #define TIMER_BLDC_GH_PORT GPIOA
@@ -163,7 +179,7 @@
 #define USART_MASTERSLAVE_RX_PORT GPIOA
 
 // ADC defines
-#define VBATT_PIN	GPIO_PIN_4
+#define VBATT_PIN GPIO_PIN_4
 #define VBATT_PORT GPIOA
 #define VBATT_CHANNEL ADC_CHANNEL_4
 #define CURRENT_DC_PIN	GPIO_PIN_6
@@ -199,23 +215,28 @@
 #define DEBUG_PIN GPIO_PIN_4
 #define DEBUG_PORT GPIOB
 
-// ADC value conversion defines
-#define MOTOR_AMP_CONV_DC_AMP 0.201465201465  // 3,3V * 1/3 - 0,004Ohm * IL(ampere) = (ADC-Data/4095) *3,3V
-#define ADC_BATTERY_VOLT      0.024169921875 	// V_Batt to V_BattMeasure = factor 30: ( (ADC-Data/4095) *3,3V *30 )
-
 // Useful math function defines
 #define ABS(a) (((a) < 0.0) ? -(a) : (a))
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 #define MAX(x, high) (((x) > (high)) ? (high) : (x))
 #define MAP(x, xMin, xMax, yMin, yMax) ((x - xMin) * (yMax - yMin) / (xMax - xMin) + yMin)
 
+
+#endif // USE_GD32130C8 --------------------------
+
+
+// Common use of STM32 and GD32
+
+// ADC value conversion defines
+#define MOTOR_AMP_CONV_DC_AMP 0.201465201465  // 3,3V * 1/3 - 0,004Ohm * IL(ampere) = (ADC-Data/4095) *3,3V
+// #define MOTOR_AMP_CONV_DC_AMP 0.02  // A per bit (12) on ADC. (by FAUTH)
+
+#define ADC_BATTERY_VOLT      0.024169921875 	// V_Batt to V_BattMeasure = factor 30: ( (ADC-Data/4095) *3,3V *30 )
+
 // ADC buffer struct
 typedef struct
 {
   uint16_t v_batt;
-	uint16_t current_dc;
+  uint16_t current_dc;
 } adc_buf_t;
-
-#endif // USE_GD32130C8
-
 

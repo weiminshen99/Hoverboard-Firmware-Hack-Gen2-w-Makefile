@@ -115,7 +115,7 @@ void TIM2_IRQHandler(void)
 	if (hornCounter_ms >= 2000)
 	{
 		// Avoid horn to be activated longer than 2 seconds
-//		SetUpperLEDMaster(RESET);
+//		SetUpperLEDMaster(RESET);	// commented out for now, WMS
 	}
 	else if (hornCounter_ms < 2000)
 	{
@@ -135,17 +135,8 @@ void TIM2_IRQHandler(void)
 #ifdef USE_STM32F103C8
 	// clear the current interrupt of Timer2
 	__HAL_TIM_CLEAR_IT(&Tim2Handle, TIM_IT_UPDATE);
-        //struct timer *tp = TIMER2_BASE;
-        //tp->sr = 0;     // cancel/clear the interrupt
 #endif
 }
-
-//#ifdef USE_STM32F103C8
-//void timer_clear_flag(uint32_t timer_peripheral, uint32_t flag)
-//{
-//        TIM_SR(timer_peripheral) = ~flag;
-//}
-//#endif
 
 
 // ===============================
@@ -158,6 +149,7 @@ void TIM2_IRQHandler(void)
 // -> pwm of timer0 running with 16kHz -> interrupt every 31,25us
 //----------------------------------------------------------------------------
 void TIMER0_BRK_UP_TRG_COM_IRQHandler(void)
+//void TIM1_BRK_IRQHandler(void) // this may be the same as the last line for stm32
 {
 	// Start ADC conversion
 	adc_software_trigger_enable(ADC_REGULAR_CHANNEL);

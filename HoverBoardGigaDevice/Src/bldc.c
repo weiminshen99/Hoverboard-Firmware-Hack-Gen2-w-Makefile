@@ -48,7 +48,7 @@ int16_t bldc_inputFilterPwm = 0;
 FlagStatus bldc_enable = RESET;
 
 // ADC buffer to be filled by DMA
-adc_buf_t adc_buffer;
+extern volatile adc_buf_t adc_buffer;
 
 // Internal calculation variables
 uint8_t hall_a;
@@ -151,21 +151,21 @@ void CalculateBLDC(void)
 	int y = 0;     // yellow = phase A
 	int b = 0;     // blue   = phase B
 	int g = 0;     // green  = phase C
-	
+
 	// Calibrate ADC offsets for the first 1000 cycles
   if (offsetcount < 1000)
-	{  
+  {
     offsetcount++;
     offsetdc = (adc_buffer.current_dc + offsetdc) / 2;
     return;
   }
-	
-	// Calculate battery voltage every 100 cycles
+
+  // Calculate battery voltage every 100 cycles
   if (buzzerTimer % 100 == 0)
 	{
     batteryVoltage = batteryVoltage * 0.999 + ((float)adc_buffer.v_batt * ADC_BATTERY_VOLT) * 0.001;
   }
-	
+
 #ifdef MASTER
 	// Create square wave for buzzer
   buzzerTimer++;
@@ -182,47 +182,69 @@ void CalculateBLDC(void)
 		gpio_bit_write(BUZZER_PORT, BUZZER_PIN, RESET);
   }
 #endif
-	
+
 	// Calculate current DC
 	currentDC = ABS((adc_buffer.current_dc - offsetdc) * MOTOR_AMP_CONV_DC_AMP);
 
-  // Disable PWM when current limit is reached (current chopping), enable is not set or timeout is reached
+  	// Disable PWM when current limit is reached (current chopping), enable is not set or timeout is reached
 	if (currentDC > DC_CUR_LIMIT || bldc_enable == RESET || timedOut == SET)
 	{
-		timer_automatic_output_disable(TIMER_BLDC);		
-  }
+#ifdef USE_GD32F130C8
+		timer_automatic_output_disable(TIMER_BLDC);
+#endif
+#ifdef USE_STM32F103C8
+		TIMER_BLDC->BDTR &= ~TIM_BDTR_MOE;
+#endif
+  	}
 	else
 	{
+#ifdef USE_GD32F130C8
 		timer_automatic_output_enable(TIMER_BLDC);
-  }
-	
-  // Read hall sensors
+#endif
+#ifdef USE_STM32F103C8
+		TIMER_BLDC->BDTR |= TIM_BDTR_MOE;
+#endif
+  	}
+
+  	// Read hall sensors
+#ifdef USE_GD32F130C8
 	hall_a = gpio_input_bit_get(HALL_A_PORT, HALL_A_PIN);
-  hall_b = gpio_input_bit_get(HALL_B_PORT, HALL_B_PIN);
+  	hall_b = gpio_input_bit_get(HALL_B_PORT, HALL_B_PIN);
 	hall_c = gpio_input_bit_get(HALL_C_PORT, HALL_C_PIN);
-  
+#endif
+#ifdef USE_STM32F103C8
+	hall_a = HAL_GPIO_ReadPin(HALL_A_PORT, HALL_A_PIN);
+  	hall_b = HAL_GPIO_ReadPin(HALL_B_PORT, HALL_B_PIN);
+	hall_c = HAL_GPIO_ReadPin(HALL_C_PORT, HALL_C_PIN);
+#endif
 	// Determine current position based on hall sensors
-  hall = hall_a * 1 + hall_b * 2 + hall_c * 4;
-  pos = hall_to_pos[hall];
-	
+  	hall = hall_a * 1 + hall_b * 2 + hall_c * 4;
+  	pos = hall_to_pos[hall];
+
 	// Calculate low-pass filter for pwm value
 	filter_reg = filter_reg - (filter_reg >> FILTER_SHIFT) + bldc_inputFilterPwm;
 	bldc_outputFilterPwm = filter_reg >> FILTER_SHIFT;
-	
-  // Update PWM channels based on position y(ellow), b(lue), g(reen)
-  blockPWM(bldc_outputFilterPwm, pos, &y, &b, &g);
-	
+
+  	// Update PWM channels based on position y(ellow), b(lue), g(reen)
+  	blockPWM(bldc_outputFilterPwm, pos, &y, &b, &g);
+
 	// Set PWM output (pwm_res/2 is the mean value, setvalue has to be between 10 and pwm_res-10)
+#ifdef USE_GD32F130C8
 	timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, CLAMP(g + pwm_res / 2, 10, pwm_res-10));
 	timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, CLAMP(b + pwm_res / 2, 10, pwm_res-10));
 	timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, CLAMP(y + pwm_res / 2, 10, pwm_res-10));
-	
+#endif
+#ifdef USE_STM32F103C8
+	TIMER_BLDC->TIMER_BLDC_CHANNEL_G = CLAMP(g + pwm_res / 2, 10, pwm_res-10);
+	TIMER_BLDC->TIMER_BLDC_CHANNEL_B = CLAMP(b + pwm_res / 2, 10, pwm_res-10);
+	TIMER_BLDC->TIMER_BLDC_CHANNEL_Y = CLAMP(y + pwm_res / 2, 10, pwm_res-10);
+#endif
 	// Increments with 62.5us
 	if(speedCounter < 4000) // No speed after 250ms
 	{
 		speedCounter++;
 	}
-	
+
 	// Every time position reaches value 1, one round is performed (rising edge)
 	if (lastPos != 1 && pos == 1)
 	{

@@ -31,13 +31,13 @@
 #include "../Inc/config.h"
 #include "../Inc/defines.h"
 #include "../Inc/setup.h"
-#include "../Inc/it.h"
 
 #define TIMEOUT_FREQ  1000
 
 #ifdef USE_STM32F103C8
 
-TIM_HandleTypeDef  Tim2Handle;	// for timer2 as the timeout
+TIM_HandleTypeDef Tim2Handle;	// for timer2 as the timeout
+TIM_HandleTypeDef htim_bldc;	// for BLDC
 
 #endif
 
@@ -58,7 +58,8 @@ uint8_t usartSteer_COM_rx_buf[USART_STEER_COM_RX_BUFFERSIZE];
 
 // DMA (ADC) structs
 dma_parameter_struct dma_init_struct_adc;
-extern adc_buf_t adc_buffer;
+
+extern volatile adc_buf_t adc_buffer;
 
 #endif
 
@@ -114,6 +115,9 @@ ErrStatus Watchdog_init(void)
 //----------------------------------------------------------------------------
 // Initializes the timeout timer
 //----------------------------------------------------------------------------
+
+void TIM2_Init(void);	// see setup_tim2.c
+
 void TimeoutTimer_init(void)
 {
 
@@ -163,44 +167,17 @@ void TimeoutTimer_init(void)
 //----------------------------------------------------------------------------
 // Initializes the GPIOs
 //----------------------------------------------------------------------------
+
+void STM_LED_GPIO_Init(void);	// setup_led.c
+void STM_PWM_GPIO_Init(void);	// setup_bldc.c
+
 void GPIO_init(void)
 {
+
 #ifdef USE_STM32F103C8
 
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-
-  // Configure GPIO Port B pins for the LEDs there
-  GPIO_InitStruct.Pin = LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_ORANGE;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  // Configure LED_RED on Port A
-  GPIO_InitStruct.Pin = LED_RED;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  // Configure Port C for MOSFET_OUT on PC13
-  GPIO_InitStruct.Pin = MOSFET_OUT_PIN;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  // exampels for Turn on/off  LEDs.
-  //HAL_GPIO_WritePin(GPIOB, LED_GREEN|UPPER_LED_PIN|LOWER_LED_PIN|LED_ORANGE, GPIO_PIN_RESET);
-  //HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_RESET);    	// turn PC13 on
-  //HAL_GPIO_WritePin(GPIOC, LED_RED, GPIO_PIN_SET);    // turn PC13 off
-  //HAL_GPIO_WritePin(GPIOC, MOSFET_OUT_PIN, GPIO_PIN_RESET);    	// turn PC13 on
-  //HAL_GPIO_WritePin(GPIOC, MOSFET_OUT_PIN, GPIO_PIN_RESET);    	// turn PC13 off
+	STM_LED_GPIO_Init();
+	STM_PWM_GPIO_Init();
 
 #endif
 
@@ -317,8 +294,17 @@ void GPIO_init(void)
 // Initializes the PWM
 //----------------------------------------------------------------------------
 
+void STM_PWM_init(void);	// setup_bldc.c
+
 void PWM_init(void)
 {
+
+#ifdef USE_STM32F103C8
+
+	STM_PWM_init();
+
+#endif
+
 
 #ifdef USE_GD32F130C8
 	// Enable timer clock
@@ -329,10 +315,10 @@ void PWM_init(void)
 
 	// Set up the basic parameter struct for the timer
 	timerBldc_paramter_struct.counterdirection 	= TIMER_COUNTER_UP;
-	timerBldc_paramter_struct.prescaler 				= 0;
-	timerBldc_paramter_struct.alignedmode 			= TIMER_COUNTER_CENTER_DOWN;
-	timerBldc_paramter_struct.period						= 72000000 / 2 / PWM_FREQ;
-	timerBldc_paramter_struct.clockdivision 		= TIMER_CKDIV_DIV1;
+	timerBldc_paramter_struct.prescaler 		= 0;
+	timerBldc_paramter_struct.alignedmode 		= TIMER_COUNTER_CENTER_DOWN;
+	timerBldc_paramter_struct.period		= 72000000 / 2 / PWM_FREQ;
+	timerBldc_paramter_struct.clockdivision 	= TIMER_CKDIV_DIV1;
 	timerBldc_paramter_struct.repetitioncounter = 0;
 	timer_auto_reload_shadow_disable(TIMER_BLDC);
 
@@ -360,7 +346,7 @@ void PWM_init(void)
 	timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, 0);
 
 	// Set up the output channel parameter struct
-	timerBldc_oc_parameter_struct.ocpolarity 		= TIMER_OC_POLARITY_HIGH;
+	timerBldc_oc_parameter_struct.ocpolarity 	= TIMER_OC_POLARITY_HIGH;
 	timerBldc_oc_parameter_struct.ocnpolarity 	= TIMER_OCN_POLARITY_LOW;
 	timerBldc_oc_parameter_struct.ocidlestate 	= TIMER_OC_IDLE_STATE_LOW;
 	timerBldc_oc_parameter_struct.ocnidlestate 	= TIMER_OCN_IDLE_STATE_HIGH;
@@ -371,11 +357,11 @@ void PWM_init(void)
 	timer_channel_output_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, &timerBldc_oc_parameter_struct);
 
 	// Set up the break parameter struct
-	timerBldc_break_parameter_struct.runoffstate			= TIMER_ROS_STATE_ENABLE;
+	timerBldc_break_parameter_struct.runoffstate		= TIMER_ROS_STATE_ENABLE;
 	timerBldc_break_parameter_struct.ideloffstate 		= TIMER_IOS_STATE_DISABLE;
-	timerBldc_break_parameter_struct.protectmode			= TIMER_CCHP_PROT_OFF;
-	timerBldc_break_parameter_struct.deadtime 				= DEAD_TIME;
-	timerBldc_break_parameter_struct.breakstate				= TIMER_BREAK_ENABLE;
+	timerBldc_break_parameter_struct.protectmode		= TIMER_CCHP_PROT_OFF;
+	timerBldc_break_parameter_struct.deadtime 		= DEAD_TIME;
+	timerBldc_break_parameter_struct.breakstate		= TIMER_BREAK_ENABLE;
 	timerBldc_break_parameter_struct.breakpolarity		= TIMER_BREAK_POLARITY_LOW;
 	timerBldc_break_parameter_struct.outputautostate 	= TIMER_OUTAUTO_ENABLE;
 
