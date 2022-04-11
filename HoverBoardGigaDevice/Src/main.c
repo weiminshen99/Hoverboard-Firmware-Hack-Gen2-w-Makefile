@@ -55,13 +55,12 @@ extern uint32_t uwTick;
 /* Private function prototypes -----------------------------------------------*/
 
 // this is needed for HAL_Delay(), see it.c
-/* void SysTick_Handler(void)   // this SysTick Timer is running at _MHZ
+void SysTick_Handler(void)   // this SysTick Timer is running at _MHZ
 {
 	HAL_IncTick();
-} */
+}
 
 void SystemClock_Config(void);
-
 
 void PC13_led_init(void)
 {
@@ -124,7 +123,7 @@ int main (void)
 	//PC13_led_init();
 
 	// Init timeout timer
-//	TimeoutTimer_init();	// see setup.c
+	TimeoutTimer_init();	// see setup.c
 
 	// Activate self hold direct after GPIO-init
 	// gpio_bit_write(SELF_HOLD_PORT, SELF_HOLD_PIN, SET);
@@ -149,17 +148,17 @@ int main (void)
 
   while(1)
 	{
-		//HAL_Delay(DELAY_IN_MAIN_LOOP);
+		HAL_Delay(DELAY_IN_MAIN_LOOP);
 
 		// Reload watchdog (watchdog fires after 1,6 seconds)
 		//fwdgt_counter_reload();	// gd32
 		//HAL_IWDG_Refresh();		// stm32
 
-		//HAL_Delay(250);
 		//Delay(250);	// for gd32, defined in it.c
 		//delay(250); // defined in misc.c
 
-		//HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
+		HAL_Delay(250);
+		HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
 
 		// led_on();
 		//HAL_GPIO_WritePin(GPIOC, MOSFET_OUT_PIN, GPIO_PIN_RESET);

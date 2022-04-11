@@ -9,21 +9,22 @@ TIM_HandleTypeDef htim_bldc;
 //----------------------------------------------------------------------------
 // Initializes the PWM (Based on the logics from Steablein
 //----------------------------------------------------------------------------
-void STM_PWM_Init(void)
+HAL_StatusTypeDef STM_PWM_Init(void)
 {
 
    HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
 
-   // Enable timer clock
-   //rcu_periph_clock_enable(RCU_TIMER_BLDC);
-
-  __HAL_RCC_TIM1_CLK_ENABLE();	// is this the same as above line?
-
    // Initial deinitialize of the timer
    //timer_deinit(TIMER_BLDC);
    {
-   // how do I do this?
+//   HAL_TIM_BASE_DeInit(TIMER_BLDC);
+//   HAL_TIM_OC_DeInit(TIMER_BLDC);
+//   HAL_TIM_PWM_DeInit(TIMER_BLDC);
    }
+
+   // Enable timer clock
+   //rcu_periph_clock_enable(RCU_TIMER_BLDC);
+   __HAL_RCC_TIM1_CLK_ENABLE();	// is this the same as above line?
 
 /* // Set up the basic parameter struct for the timer
    timerBldc_paramter_struct.counterdirection = TIMER_COUNTER_UP;
@@ -40,40 +41,45 @@ void STM_PWM_Init(void)
    htim_bldc.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
    htim_bldc.Init.RepetitionCounter = 0;
    htim_bldc.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-
    // Initialize timer with basic parameter struct
    // timer_init(TIMER_BLDC, &timerBldc_paramter_struct);
-   HAL_TIM_PWM_Init(&htim_bldc);
+   if (HAL_TIM_Base_Init(&htim_bldc) != HAL_OK)
+   {
+	return HAL_ERROR;
+   }
 
-   /*   // Deactivate output channel fastmode
-        timer_channel_output_fast_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, TIMER_OC_FAST_$
-        timer_channel_output_fast_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, TIMER_OC_FAST_$
-        timer_channel_output_fast_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, TIMER_OC_FAST_$
+   // do I need the following?
+   TIM_MasterConfigTypeDef sMasterConfig;
+   sMasterConfig.MasterOutputTrigger = TIM_TRGO_ENABLE;
+   sMasterConfig.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
+   HAL_TIMEx_MasterConfigSynchronization(&htim_bldc, &sMasterConfig);
 
+   /*
         // Deactivate output channel shadow function
-        timer_channel_output_shadow_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, TIMER_OC_SHA$
-        timer_channel_output_shadow_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, TIMER_OC_SHA$
-        timer_channel_output_shadow_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, TIMER_OC_SHA$
-
-        // Set output channel PWM type to PWM1
-        timer_channel_output_mode_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, TIMER_OC_MODE_$
-        timer_channel_output_mode_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, TIMER_OC_MODE_$
-        timer_channel_output_mode_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, TIMER_OC_MODE_$
-
-        // Initialize pulse length with value 0 (pulse duty factor = zero)
-        timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, 0);
-        timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, 0);
-        timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, 0);  */
+        timer_channel_output_shadow_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, TIMER_OC_SHADOW_DISABLE);
+        timer_channel_output_shadow_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, TIMER_OC_SHADOW_DISABLE);
+        timer_channel_output_shadow_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, TIMER_OC_SHADOW_DISABLE); */
   {
   // HOW DO I DO THE ABOVE LINES?
   }
 
-  TIM_MasterConfigTypeDef sMasterConfig;
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_ENABLE;
-  sMasterConfig.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
-  HAL_TIMEx_MasterConfigSynchronization(&htim_bldc, &sMasterConfig);
+  /*
+     // Set output channel PWM type to PWM1
+     timer_channel_output_mode_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, TIMER_OC_MODE_PWM1);
+     timer_channel_output_mode_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, TIMER_OC_MODE_PWM1);
+     timer_channel_output_mode_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, TIMER_OC_MODE_PWM1);
 
-  /* // Set up the output channel parameter struct
+     // Deactivate output channel fastmode
+     timer_channel_output_fast_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, TIMER_OC_FAST_DISABLE);
+     timer_channel_output_fast_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, TIMER_OC_FAST_DISABLE);
+     timer_channel_output_fast_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, TIMER_OC_FAST_DISABLE);
+
+     // Initialize pulse length with value 0 (pulse duty factor = zero)
+     timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, 0);
+     timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_B, 0);
+     timer_channel_output_pulse_value_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, 0);
+
+     // Set up the output channel parameter struct
      timerBldc_oc_parameter_struct.ocpolarity   = TIMER_OC_POLARITY_HIGH;
      timerBldc_oc_parameter_struct.ocnpolarity  = TIMER_OCN_POLARITY_LOW;
      timerBldc_oc_parameter_struct.ocidlestate  = TIMER_OC_IDLE_STATE_LOW;
@@ -84,12 +90,14 @@ void STM_PWM_Init(void)
      timer_channel_output_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_Y, &timerBldc_oc_param$*/
   TIM_OC_InitTypeDef sConfigOC;
   sConfigOC.OCMode       = TIM_OCMODE_PWM1;
+  sConfigOC.OCFastMode   = TIM_OCFAST_DISABLE;
   sConfigOC.Pulse        = 0;
   sConfigOC.OCPolarity   = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity  = TIM_OCNPOLARITY_LOW;
-  sConfigOC.OCFastMode   = TIM_OCFAST_DISABLE;
   sConfigOC.OCIdleState  = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_SET;
+
+  HAL_TIM_OC_Init(&htim_bldc);
   HAL_TIM_PWM_ConfigChannel(&htim_bldc, &sConfigOC, TIM_CHANNEL_1);
   HAL_TIM_PWM_ConfigChannel(&htim_bldc, &sConfigOC, TIM_CHANNEL_2);
   HAL_TIM_PWM_ConfigChannel(&htim_bldc, &sConfigOC, TIM_CHANNEL_3);
@@ -116,7 +124,7 @@ void STM_PWM_Init(void)
 
   // Disable until all channels are set for PWM output
   // timer_disable(TIMER_BLDC);
-  TIMER_BLDC->BDTR &= ~TIM_BDTR_MOE;
+  // ?????? TIMER_BLDC->BDTR &= ~TIM_BDTR_MOE;
 
 /* // Enable all three channels for PWM output
    timer_channel_output_state_config(TIMER_BLDC, TIMER_BLDC_CHANNEL_G, TIMER_CCX_ENABLE);
@@ -134,17 +142,29 @@ void STM_PWM_Init(void)
   HAL_TIMEx_PWMN_Start(&htim_bldc, TIM_CHANNEL_2);
   HAL_TIMEx_PWMN_Start(&htim_bldc, TIM_CHANNEL_3);
 
-/* // Enable TIMER_INT_UP interrupt and set priority
-  nvic_irq_enable(TIMER0_BRK_UP_TRG_COM_IRQn, 0, 0);
-  timer_interrupt_enable(TIMER_BLDC, TIMER_INT_UP); */
-  __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_BREAK);
-  __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_UPDATE);
-  __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_TRIGGER);
-  //TIM1->DIER = 0x0003;
-
   // Enable the timer and start PWM
-  //timer_enable(TIMER_BLDC);
-  __HAL_TIM_ENABLE(&htim_bldc);
+  if (HAL_TIM_Base_Init(&htim_bldc) == HAL_OK)
+  {
+    /* Start the TIM time Base generation in interrupt mode */
+    /* // Enable TIMER_INT_UP interrupt and set priority
+    nvic_irq_enable(TIMER0_BRK_UP_TRG_COM_IRQn, 0, 0);*/
+    /* Configure the TIM1 IRQ priority */
+    HAL_NVIC_SetPriority(TIM1_UP_IRQn, 0, 0);
+    /* Enable the TIM1 global Interrupt */
+    HAL_NVIC_EnableIRQ(TIM1_UP_IRQn);
+
+    //timer_enable(TIMER_BLDC);
+    __HAL_TIM_ENABLE(&htim_bldc);
+
+    /* timer_interrupt_enable(TIMER_BLDC, TIMER_INT_UP); */
+    HAL_TIM_Base_Start_IT(&htim_bldc);
+//    __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_BREAK);
+    __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_UPDATE);
+//    __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_TRIGGER);
+    //TIM1->DIER = 0x0003;
+  } else {
+    return HAL_ERROR;
+  }
 }
 
 

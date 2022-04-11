@@ -69,7 +69,6 @@ extern volatile adc_buf_t adc_buffer;
 
 void Interrupt_init(void)
 {
-
 #ifdef USE_GD32F130C8
   	// Set IRQ priority configuration
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
@@ -124,7 +123,7 @@ void TimeoutTimer_init(void)
 
 #ifdef USE_STM32F103C8
 
-//	TIM2_Init();
+	TIM2_Init();	// see setup_tim2.c
 
 	// timer2 init and start it with interrupt. See setup_tim2.c
 //	if (HAL_TIM_Base_Init(&Tim2Handle) == HAL_OK)
@@ -295,7 +294,7 @@ void GPIO_init(void)
 // Initializes the PWM
 //----------------------------------------------------------------------------
 
-void STM_PWM_Init(void);	// setup_bldc.c
+HAL_StatusTypeDef STM_PWM_Init(void);	// setup_bldc.c
 
 void PWM_init(void)
 {

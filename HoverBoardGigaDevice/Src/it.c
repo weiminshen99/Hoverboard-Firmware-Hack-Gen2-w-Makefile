@@ -58,7 +58,7 @@ TIM_HandleTypeDef  Tim2Handle;	// timeout uses timer2
 //----------------------------------------------------------------------------
 // SysTick_Handler
 //----------------------------------------------------------------------------
-
+/*
 void SysTick_Handler(void)
 {
 #ifdef USE_STM32F103C8
@@ -68,7 +68,7 @@ void SysTick_Handler(void)
   msTicks++;
 #endif
 }
-
+*/
 
 //----------------------------------------------------------------------------
 // Resets the timeout to zero
