@@ -42,7 +42,7 @@
 #include "../Inc/setup.h"
 #include "../Inc/it.h"
 #include "../Inc/led.h"
-//#include "../Inc/bldc.h"
+#include "../Inc/bldc.h"
 //#include "../Inc/commsMasterSlave.h"
 //#include "../Inc/commsSteering.h"
 //#include "../Inc/commsBluetooth.h"
@@ -55,10 +55,10 @@ extern uint32_t uwTick;
 /* Private function prototypes -----------------------------------------------*/
 
 // this is needed for HAL_Delay(), see it.c
-//void SysTick_Handler(void)   // this SysTick Timer is running at _MHZ
-//{
-//	HAL_IncTick();
-//}
+/* void SysTick_Handler(void)   // this SysTick Timer is running at _MHZ
+{
+	HAL_IncTick();
+} */
 
 void SystemClock_Config(void);
 
@@ -91,13 +91,12 @@ int main (void)
 
   HAL_Init();
 
-  SystemClock_Config();
-
-/*
   __HAL_RCC_AFIO_CLK_ENABLE();  // WHAT IS THIS?
   // Configure the SysTick to have interrupt in 1ms time basis
   HAL_SYSTICK_Config(SystemCoreClock/1000U);
+  /* System interrupt init*/
   HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+  /* MemoryManagement_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
   HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0);
   HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
@@ -105,7 +104,9 @@ int main (void)
   HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
   HAL_NVIC_SetPriority(PendSV_IRQn, 0, 0);
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
-*/
+
+  SystemClock_Config();
+
 #endif
 
 	// Init watchdog
@@ -116,14 +117,14 @@ int main (void)
 //	}
 
 	// Init Interrupts
-//	Interrupt_init();
+	Interrupt_init();
 
 	// Init GPIOs
 	GPIO_init();		// see setup.c
 	//PC13_led_init();
 
 	// Init timeout timer
-	TimeoutTimer_init();	// see setup.c
+//	TimeoutTimer_init();	// see setup.c
 
 	// Activate self hold direct after GPIO-init
 	// gpio_bit_write(SELF_HOLD_PORT, SELF_HOLD_PIN, SET);
@@ -136,7 +137,7 @@ int main (void)
 //	ADC_init();
 
 	// Init PWM
-//	PWM_init();
+	PWM_init();
 
 	// Device has 1,6 seconds to do all the initialization
 	// afterwards watchdog will be fired
@@ -148,29 +149,29 @@ int main (void)
 
   while(1)
 	{
-		HAL_Delay(DELAY_IN_MAIN_LOOP);
+		//HAL_Delay(DELAY_IN_MAIN_LOOP);
 
 		// Reload watchdog (watchdog fires after 1,6 seconds)
 		//fwdgt_counter_reload();	// gd32
 		//HAL_IWDG_Refresh();		// stm32
 
-//		HAL_Delay(250);
+		//HAL_Delay(250);
 		//Delay(250);	// for gd32, defined in it.c
 		//delay(250); // defined in misc.c
 
-//		HAL_GPIO_TogglePin(GPIOC, MOSFET_OUT_PIN);
+		//HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
 
 		// led_on();
 		//HAL_GPIO_WritePin(GPIOC, MOSFET_OUT_PIN, GPIO_PIN_RESET);
 		//intro_demo_led(100);	// defined in misc.c, testing
-//	        *GPIOC_BSRR |= ((uint32_t) 1 << (13 + 0)); // turn LED on
+	        // *GPIOC_BSRR |= ((uint32_t) 1 << (13 + 0)); // turn LED on
 
-//		HAL_Delay(250);
+		//HAL_Delay(250);
 		//delay(250); // defined in misc.c
 
 		// led_off(); // defined in blink.c
 		// HAL_GPIO_WritePin(GPIOC, MOSFET_OUT_PIN, GPIO_PIN_SET);
-//	        *GPIOC_BSRR |= ((uint32_t) 1 << (13 + 16)); // turn LED off
+	        // *GPIOC_BSRR |= ((uint32_t) 1 << (13 + 16)); // turn LED off
   	}
 }
 

@@ -43,7 +43,7 @@ TIM_HandleTypeDef htim_bldc;	// for BLDC
 
 #ifdef USE_GD32F130C8
 
-// timeout timer parameter structs
+c// timeout timer parameter structs
 timer_parameter_struct timeoutTimer_paramter_struct;
 
 // PWM timer Parameter structs
@@ -73,9 +73,10 @@ void Interrupt_init(void)
 #ifdef USE_GD32F130C8
   	// Set IRQ priority configuration
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
-
 #endif
-
+#ifdef USE_STM32F103C8
+	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+#endif
 }
 
 
@@ -123,7 +124,7 @@ void TimeoutTimer_init(void)
 
 #ifdef USE_STM32F103C8
 
-	TIM2_Init();
+//	TIM2_Init();
 
 	// timer2 init and start it with interrupt. See setup_tim2.c
 //	if (HAL_TIM_Base_Init(&Tim2Handle) == HAL_OK)
@@ -294,14 +295,15 @@ void GPIO_init(void)
 // Initializes the PWM
 //----------------------------------------------------------------------------
 
-void STM_PWM_init(void);	// setup_bldc.c
+void STM_PWM_Init(void);	// setup_bldc.c
 
 void PWM_init(void)
 {
 
 #ifdef USE_STM32F103C8
 
-	STM_PWM_init();
+	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
+	STM_PWM_Init();
 
 #endif
 

@@ -51,12 +51,14 @@ extern FlagStatus activateWeakening;
 extern FlagStatus beepsBackwards;
 
 #ifdef USE_STM32F103C8
+TIM_HandleTypeDef  htim_bldc; 	// BLDC uses timer1
 TIM_HandleTypeDef  Tim2Handle;	// timeout uses timer2
 #endif
 
 //----------------------------------------------------------------------------
 // SysTick_Handler
 //----------------------------------------------------------------------------
+
 void SysTick_Handler(void)
 {
 #ifdef USE_STM32F103C8
@@ -66,6 +68,7 @@ void SysTick_Handler(void)
   msTicks++;
 #endif
 }
+
 
 //----------------------------------------------------------------------------
 // Resets the timeout to zero
@@ -123,8 +126,8 @@ void TIM2_IRQHandler(void)
 	}
 
 	// Update LED program
-	HAL_GPIO_TogglePin(GPIOC, MOSFET_OUT_PIN); // testing
-	//CalculateLEDProgram();
+	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN); // testing
+	CalculateLEDProgram();
 #endif
 
 	// Clear timer update interrupt flag
@@ -139,17 +142,14 @@ void TIM2_IRQHandler(void)
 }
 
 
-// ===============================
-#ifdef USE_GD32F130C8
-
 //----------------------------------------------------------------------------
 // Timer0_Update_Handler
 // Is called when upcouting of timer0 is finished and the UPDATE-flag is set
 // AND when downcouting of timer0 is finished and the UPDATE-flag is set
 // -> pwm of timer0 running with 16kHz -> interrupt every 31,25us
 //----------------------------------------------------------------------------
+#ifdef USE_GD32F130C8
 void TIMER0_BRK_UP_TRG_COM_IRQHandler(void)
-//void TIM1_BRK_IRQHandler(void) // this may be the same as the last line for stm32
 {
 	// Start ADC conversion
 	adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
@@ -157,12 +157,45 @@ void TIMER0_BRK_UP_TRG_COM_IRQHandler(void)
 	// Clear timer update interrupt flag
 	timer_interrupt_flag_clear(TIMER_BLDC, TIMER_INT_UP);
 }
+#endif
+
+#ifdef USE_STM32F103C8
+void TIM1_BRK_IRQHandler(void) // would this work?
+{
+	//adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
+
+	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
+
+        __HAL_TIM_CLEAR_IT(&htim_bldc, TIM_IT_BREAK);
+}
+
+void TIM1_UP_IRQHandler(void) // would this work?
+{
+	//adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
+
+	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
+
+        __HAL_TIM_CLEAR_IT(&htim_bldc, TIM_IT_UPDATE);
+}
+
+void TIM1_TRG_COM_IRQHandler(void) // would this work?
+{
+	//adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
+
+	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
+
+        __HAL_TIM_CLEAR_IT(&htim_bldc, TIM_IT_TRIGGER);
+}
+
+#endif
 
 //----------------------------------------------------------------------------
 // This function handles DMA_Channel0_IRQHandler interrupt
 // Is called, when the ADC scan sequence is finished
 // -> ADC is triggered from timer0-update-interrupt -> every 31,25us
 //----------------------------------------------------------------------------
+
+#ifdef USE_GD32F130C8
 void DMA_Channel0_IRQHandler(void)
 {
 	// Calculate motor PWMs
