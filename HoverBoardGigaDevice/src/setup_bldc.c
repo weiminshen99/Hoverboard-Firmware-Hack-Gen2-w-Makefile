@@ -157,11 +157,11 @@ HAL_StatusTypeDef STM_PWM_Init(void)
     __HAL_TIM_ENABLE(&htim_bldc);
 
     /* timer_interrupt_enable(TIMER_BLDC, TIMER_INT_UP); */
-    HAL_TIM_Base_Start_IT(&htim_bldc);
-//    __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_BREAK);
+    // __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_BREAK);
     __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_UPDATE);
-//    __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_TRIGGER);
+    // __HAL_TIM_ENABLE_IT(&htim_bldc, TIM_IT_TRIGGER);
     //TIM1->DIER = 0x0003;
+    return HAL_TIM_Base_Start_IT(&htim_bldc);
   } else {
     return HAL_ERROR;
   }

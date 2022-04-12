@@ -77,7 +77,7 @@ void TIM2_IRQHandler(void);
   * @param  TickPriority: Tick interrupt priority.
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_InitTick (uint32_t TickPriority)
+HAL_StatusTypeDef HAL_InitTick_TEST (uint32_t TickPriority)
 {
   RCC_ClkInitTypeDef    clkconfig;
   uint32_t              uwTimclock, uwAPB1Prescaler = 0U;
@@ -179,7 +179,24 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void TIM2_Init(void)
 {
-        HAL_TIM_Base_Start_IT(&Tim2Handle);     // this starts the timer2
+
+// HAL_TIM_Base_Start_IT(&Tim2Handle);     // this starts the timer2
+
+  // Prepare the paramters for initializing TIM2
+  Tim2Handle.Instance = TIM2;
+  Tim2Handle.Init.Prescaler = 0; // to slow it N times, muliplte N
+  Tim2Handle.Init.Period = 72000000;
+  Tim2Handle.Init.ClockDivision = 0;
+  Tim2Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+  Tim2Handle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+  if (HAL_TIM_Base_Init(&Tim2Handle) == HAL_OK) // init TIM2 now
+  {
+    __HAL_RCC_TIM2_CLK_ENABLE();        // Enable TIM2 clock
+    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0); // Configure TIM2's IRQ priority
+    HAL_NVIC_EnableIRQ(TIM2_IRQn);      // Enable TIM2's global Interrupt
+    HAL_TIM_Base_Start_IT(&Tim2Handle);  // Start TIM2's interrupt
+  }
 }
 
 /*

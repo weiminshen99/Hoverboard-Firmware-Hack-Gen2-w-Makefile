@@ -36,14 +36,14 @@
 
 #ifdef USE_STM32F103C8
 
-TIM_HandleTypeDef Tim2Handle;	// for timer2 as the timeout
+TIM_HandleTypeDef Tim2Handle;	// use timer2 for timeout
 TIM_HandleTypeDef htim_bldc;	// for BLDC
 
 #endif
 
 #ifdef USE_GD32F130C8
 
-c// timeout timer parameter structs
+// timeout timer parameter structs
 timer_parameter_struct timeoutTimer_paramter_struct;
 
 // PWM timer Parameter structs
@@ -115,23 +115,23 @@ ErrStatus Watchdog_init(void)
 //----------------------------------------------------------------------------
 // Initializes the timeout timer
 //----------------------------------------------------------------------------
-
-void TIM2_Init(void);	// see setup_tim2.c
-
 void TimeoutTimer_init(void)
 {
-
 #ifdef USE_STM32F103C8
-
-	TIM2_Init();	// see setup_tim2.c
-
-	// timer2 init and start it with interrupt. See setup_tim2.c
-//	if (HAL_TIM_Base_Init(&Tim2Handle) == HAL_OK)
-//    	HAL_TIM_Base_Start_IT(&Tim2Handle);
-
-	//if (HAL_InitTick(0) == HAL_OK) { // don't use this, it will effect all other timers
-	   // timers started well, see setup_tim2.c
-
+	// Prepare the paramters for initializing TIM2
+	Tim2Handle.Instance = TIM2;
+  	Tim2Handle.Init.Prescaler = 0; // to slow it N times, muliplte N
+  	Tim2Handle.Init.Period = 72000000;
+  	Tim2Handle.Init.ClockDivision = 0;
+  	Tim2Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+  	Tim2Handle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  	// initialize TIM2 and start its interrupt generation
+  	if (HAL_TIM_Base_Init(&Tim2Handle) == HAL_OK) // init TIM2 now
+  	{ __HAL_RCC_TIM2_CLK_ENABLE();        	// Enable TIM2 clock
+    	  HAL_NVIC_SetPriority(TIM2_IRQn,0,0);	// Configure TIM2's IRQ priority
+    	  HAL_NVIC_EnableIRQ(TIM2_IRQn);      	// Enable TIM2's global Interrupt
+    	  HAL_TIM_Base_Start_IT(&Tim2Handle);	// Start TIM2's interrupt
+  	}
 #endif
 
 #ifdef USE_GD32F130C8
@@ -302,7 +302,7 @@ void PWM_init(void)
 #ifdef USE_STM32F103C8
 
 	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
-	STM_PWM_Init();
+	STM_PWM_Init();		// in setup_bldc.c
 
 #endif
 
