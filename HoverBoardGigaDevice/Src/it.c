@@ -51,8 +51,10 @@ extern FlagStatus activateWeakening;
 extern FlagStatus beepsBackwards;
 
 #ifdef USE_STM32F103C8
-TIM_HandleTypeDef  htim_bldc; 	// BLDC uses timer1
-TIM_HandleTypeDef  Tim2Handle;	// timeout uses timer2
+TIM_HandleTypeDef htim_bldc; 	// BLDC uses timer1
+TIM_HandleTypeDef Tim2Handle;	// timeout uses timer2
+ADC_HandleTypeDef hadc1;
+extern volatile adc_buf_t adc_buffer;
 #endif
 
 //----------------------------------------------------------------------------
@@ -160,6 +162,19 @@ void TIMER0_BRK_UP_TRG_COM_IRQHandler(void)
 #endif
 
 #ifdef USE_STM32F103C8
+
+void TIM1_UP_IRQHandler(void) // would this work?
+{
+	//adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
+	//HAL_ADC_Start_DMA(&hadc1, (uint32_t) adc_buffer, 2); // is it correct?
+	HAL_ADC_Start(&hadc1);
+
+	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN); // for testing
+
+        __HAL_TIM_CLEAR_IT(&htim_bldc, TIM_IT_UPDATE);
+}
+
+/*
 void TIM1_BRK_IRQHandler(void) // would this work?
 {
 	//adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
@@ -167,15 +182,6 @@ void TIM1_BRK_IRQHandler(void) // would this work?
 	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
 
         __HAL_TIM_CLEAR_IT(&htim_bldc, TIM_IT_BREAK);
-}
-
-void TIM1_UP_IRQHandler(void) // would this work?
-{
-	//adc_software_trigger_enable(ADC_REGULAR_CHANNEL);
-
-	HAL_GPIO_TogglePin(DEBUG_PORT, DEBUG_PIN);
-
-        __HAL_TIM_CLEAR_IT(&htim_bldc, TIM_IT_UPDATE);
 }
 
 void TIM1_TRG_COM_IRQHandler(void) // would this work?
@@ -186,6 +192,7 @@ void TIM1_TRG_COM_IRQHandler(void) // would this work?
 
         __HAL_TIM_CLEAR_IT(&htim_bldc, TIM_IT_TRIGGER);
 }
+*/
 
 #endif
 
@@ -211,12 +218,29 @@ void DMA_Channel0_IRQHandler(void)
 		dma_interrupt_flag_clear(DMA_CH0, DMA_INT_FLAG_FTF);
 	}
 }
+#endif
 
+#ifdef USE_STM32F103C8
+void DMA1_Channel1_IRQHandler(void)
+{
+	// Calculate motor PWMs
+	CalculateBLDC();
+
+	#ifdef SLAVE
+	// Calculates RGB LED
+	CalculateLEDPWM();
+	#endif
+
+	HAL_ADC_Stop(&hadc1);
+	//DMA1_Channel1_CLEAR_IT(DMA_CH0);
+}
+#endif
 
 //----------------------------------------------------------------------------
 // This function handles DMA_Channel1_2_IRQHandler interrupt
 // Is asynchronously called when USART0 RX finished
 //----------------------------------------------------------------------------
+#ifdef USE_GD32F130C8
 void DMA_Channel1_2_IRQHandler(void)
 {
 	// USART steer/bluetooth RX

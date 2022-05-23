@@ -57,6 +57,7 @@ Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c \
 Src/setup_led.c \
 Src/setup_bldc.c \
+Src/setup_adc.c \
 Src/setup.c \
 Src/led.c \
 Src/bldc.c \

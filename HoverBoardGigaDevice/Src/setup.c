@@ -58,10 +58,9 @@ uint8_t usartSteer_COM_rx_buf[USART_STEER_COM_RX_BUFFERSIZE];
 
 // DMA (ADC) structs
 dma_parameter_struct dma_init_struct_adc;
-
-extern volatile adc_buf_t adc_buffer;
-
 #endif
+
+volatile adc_buf_t adc_buffer;
 
 //----------------------------------------------------------------------------
 // Initializes the interrupts
@@ -395,9 +394,14 @@ void PWM_init(void)
 //----------------------------------------------------------------------------
 // Initializes the ADC
 //----------------------------------------------------------------------------
+void STM_ADC_Init(void);
 
 void ADC_init(void)
 {
+#ifdef USE_STM32F103C8
+	STM_ADC_Init();		// in setup_adc.c
+#endif
+
 #ifdef USE_GD32F130C8
 	// Enable ADC and DMA clock
 	rcu_periph_clock_enable(RCU_ADC);
