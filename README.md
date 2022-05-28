@@ -1,6 +1,7 @@
 #### Updates 5-27-2022
 
 If you just need a clean Makefile for this application, please visit https://github.com/weiminshen99/GD32-hover-master-slave
+This repository is trying to port the code to both GD32 and STM32.
 
 #### Updates 3-21-2022
 
