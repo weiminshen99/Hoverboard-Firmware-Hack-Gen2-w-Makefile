@@ -5,6 +5,8 @@ This repository is to use Makefile to compile the firmware
 
 	% cd HoverBoardGigaDevice
 	% make
+	% cd HoverboardPCBFirmware
+	% make
 
 For a clean version, please visit https://github.com/weiminshen99/GD32-hover-master-slave. 
 
