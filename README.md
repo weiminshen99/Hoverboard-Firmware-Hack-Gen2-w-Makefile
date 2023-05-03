@@ -1,4 +1,5 @@
 The code is forked from https://github.com/flo199213/Hoverboard-Firmware-Hack-Gen2
+as well as goodies from https://github.com/gaucho1978/CHEAP-LAWNMOWER-ROBOT-FROM-HOVERBOARD
 
 This repository is to use Makefile to compile the firmware
 
