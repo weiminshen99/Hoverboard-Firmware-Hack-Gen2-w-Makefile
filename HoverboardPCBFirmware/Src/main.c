@@ -20,8 +20,8 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include <math.h>     
-#include "arm_math.h" 
+#include <math.h>
+//#include "arm_math.h"
 
 #ifdef MASTER
 
@@ -536,6 +536,12 @@ int main (void){
     }
 #endif	
 	
+
+#ifdef SLAVE
+		SetEnable(SET);
+		SetSpeed(250);
+		ResetTimeout();
+#endif
 
 		Delay(DELAY_IN_MAIN_LOOP);
 		

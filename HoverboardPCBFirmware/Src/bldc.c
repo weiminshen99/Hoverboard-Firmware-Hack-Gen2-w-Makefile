@@ -10,17 +10,13 @@
 	float PID_PARAM_KP        =0.3500;             /* Proporcional */
 	float PID_PARAM_KI        =0.0005;        /* Integral */ 
 	float PID_PARAM_KD        =0.0010;            /* Derivative */
-	
+
 #ifdef SLAVE
-	#include <arm_math.h>
+	//#include <arm_math.h>
 	extern int16_t masterRemainingSteps;
 	/* PID error for slave wheel speed correction*/
 	float pid_error; //int16_t
-		/* Include ARM math */
-	
-	
-
-
+	/* Include ARM math */
 
 	/* ARM PID Instance, float_32 format */
 	//arm_pid_instance_f32 PID;
@@ -32,7 +28,7 @@ bool overCurrent=FALSE;
 bool motorIsStopping=FALSE;
 
 uint16_t moveByStepsTimeout=0; //timeout used to maintain steady the wheel for a second, after a movementBySteps was completed
-	
+
 //const float speedConversionFactor= (((WHEEL_PERIMETER/90.0f)*6.0f)/62.5f)*3600 ; //90=steps in one turn of wheel, 6=steps in one turn of the phases, 62.5=time duration in usec for each speedcounter increment, 3600= confersion factor from mm/usec to km/h
 const float speedConversionFactor= (((WHEEL_PERIMETER/90.0f))/62.5f)*3600 ; //90=steps in one turn of wheel, 62.5=time duration in usec for each speedcounter increment, 3600= confersion factor from mm/usec to km/h
 const float speedConversionFactor_mm_per_second= (((WHEEL_PERIMETER/90.0f))/62.5f)*1000000 ; //90=steps in one turn of wheel, 62.5=time duration in usec for each speedcounter increment, 1000000= conversion factor from mm/usec to mm/sec
@@ -118,7 +114,7 @@ const uint8_t hall_to_pos[8] =
 // Block PWM calculation based on position
 // if stopPosition is true, the motor is stopped exactly in the same actual position (HALL position)
 //----------------------------------------------------------------------------
-__INLINE void blockPWM(int pwm, int pwmPos, int *y, int *b, int *g, bool stopPosition){
+void blockPWM(int pwm, int pwmPos, int *y, int *b, int *g, bool stopPosition){
   switch(pwmPos){
     case 1:
 			*y = 0;

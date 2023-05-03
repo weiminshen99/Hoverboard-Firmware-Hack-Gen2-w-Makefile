@@ -9,8 +9,8 @@
 	#include "gd32f1x0.h"
 
 	// ################################################################################
-	#define MASTER										  	// Select if firmware is for master or slave board
-	//#define SLAVE 												// Select if firmware is for master or slave board
+	//#define MASTER		// Select if firmware is for master or slave board
+	#define SLAVE		// Select if firmware is for master or slave board
 	// ################################################################################
 	#define PWM_FREQ         		16000     // PWM frequency in Hz
 	#define DEAD_TIME        		60        // PWM deadtime (60 = 1µs, measured by oscilloscope)
@@ -40,7 +40,7 @@
 		#define SPEED_COEFFICIENT   -1
 		#define STEER_COEFFICIENT   1
 		#define REMOTE_CONTROL_PWM          //comment this line if pwm Radio CONTROL of the lawnmower is not connected
-		#define DEBUG_ENABLED		
+		#define DEBUG_ENABLED
 		//#define TERMINAL_ENABLED 					// uncomment this line to connect a terminal on the remote port and use it as debugging terminal port. this will generate a firmware bigger than 32kB.
 		//#define TERMINAL_ENABLED_PID_TUNING // this is like TERMINAL_ENABLED but it allows just pid tuning of the slave wheel, via serial port of master board
 		#ifndef TERMINAL_ENABLED
@@ -49,7 +49,7 @@
 			#endif
 		#endif
 #endif
-	
+
 	#define DEBUG_WITH_TRACE_ENABLED //if enabled PB3 is left free for trace purpose. with keil you can use trace to see variables in a graph
 	#define DISTANCE_BETWEEN_WHEELS 520.0f	//millimeters era 525
 	#define WHEEL_PERIMETER 542.0f //millimeters
