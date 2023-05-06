@@ -37,34 +37,25 @@ BUILD_DIR = build
 # source
 ######################################
 # C sources
+
+DRIVERS_DIR = RTE/Device/GD32F130C8
+
 C_SOURCES =  \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_adc.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_can.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_cec.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_cmp.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_crc.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dac.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dbg.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_dma.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_exti.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_fmc.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_fwdgt.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_gpio.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_i2c.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_ivref.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_misc.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_opa.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_pmu.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_rcu.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_rtc.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_slcd.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_spi.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_syscfg.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_timer.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_tsi.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_usart.c \
-../../Drivers/GD32F1x0_standard_peripheral/Source/gd32f1x0_wwdgt.c \
-../../Drivers/CMSIS/Source/system_gd32f1x0.c \
+$(DRIVERS_DIR)/gd32f1x0_adc.c \
+$(DRIVERS_DIR)/gd32f1x0_dbg.c \
+$(DRIVERS_DIR)/gd32f1x0_dma.c \
+$(DRIVERS_DIR)/gd32f1x0_fwdgt.c \
+$(DRIVERS_DIR)/gd32f1x0_gpio.c \
+$(DRIVERS_DIR)/gd32f1x0_i2c.c \
+$(DRIVERS_DIR)/gd32f1x0_misc.c \
+$(DRIVERS_DIR)/gd32f1x0_opa.c \
+$(DRIVERS_DIR)/gd32f1x0_pmu.c \
+$(DRIVERS_DIR)/gd32f1x0_rcu.c \
+$(DRIVERS_DIR)/gd32f1x0_syscfg.c \
+$(DRIVERS_DIR)/gd32f1x0_timer.c \
+$(DRIVERS_DIR)/gd32f1x0_usart.c \
+$(DRIVERS_DIR)/gd32f1x0_wwdgt.c \
+$(DRIVERS_DIR)/system_gd32f1x0.c \
 Src/main.c \
 Src/it.c \
 Src/setup.c \
@@ -82,7 +73,7 @@ Src/navigator.c
 
 # ASM sources
 ASM_SOURCES =  \
-startup_gd32f1x0.s
+$(DRIVERS_DIR)/startup_gd32f1x0.s
 
 
 #######################################

@@ -7,9 +7,9 @@
 
 	/* Choose PID parameters for slave wheel speed correction */
 	// note: PID calibration according to Ziegler–Nichols method give Ku=0.2, period=3seconds(96000 samples)
-	float PID_PARAM_KP        =0.3500;             /* Proporcional */
-	float PID_PARAM_KI        =0.0005;        /* Integral */ 
-	float PID_PARAM_KD        =0.0010;            /* Derivative */
+	float PID_PARAM_KP        =0.3500;             	/* Proporcional */
+	float PID_PARAM_KI        =0.0005;        	/* Integral */
+	float PID_PARAM_KD        =0.0010;            	/* Derivative */
 
 #ifdef SLAVE
 	//#include <arm_math.h>
@@ -17,11 +17,8 @@
 	/* PID error for slave wheel speed correction*/
 	float pid_error; //int16_t
 	/* Include ARM math */
-
 	/* ARM PID Instance, float_32 format */
 	//arm_pid_instance_f32 PID;
-	arm_pid_instance_f32 PID;
-
 #endif
 
 bool overCurrent=FALSE;
@@ -184,7 +181,7 @@ void blockPWM(int pwm, int pwmPos, int *y, int *b, int *g, bool stopPosition){
   }
 }
 
-#ifdef SLAVE
+#ifdef COMPILE_ERROOR // SLAVE
 void PID_init(void){
 			/* Set PID parameters for slave wheel speed correction*/
 			/* Set this for your needs */
@@ -200,16 +197,15 @@ void PID_setKp(float myK){
 			PID_init();
 }
 void PID_setKi(float myK){
-			PID_PARAM_KI = myK;		
+			PID_PARAM_KI = myK;
 			PID_init();
 }
 void PID_setKd(float myK){
-			PID_PARAM_KD = myK;		
+			PID_PARAM_KD = myK;
 			PID_init();
 }
-
-
 #endif
+
 //----------------------------------------------------------------------------
 // Set motor enable
 //----------------------------------------------------------------------------
@@ -500,7 +496,7 @@ void go_to(int16_t distanceInMillimeters){
 	moveByStepsCompleted=FALSE;
 	moveByStepsTimeout=0;
 	//arm_pid_reset_q15(&PID);
-	#ifdef SLAVE
+	#ifdef COMPILE_ERROR // SLAVE
 		PID_init();
 		masterRemainingSteps=remainingSteps; //avoid the slave wheel to rotate fast at the beginning, before to receive message from master board
 	#endif

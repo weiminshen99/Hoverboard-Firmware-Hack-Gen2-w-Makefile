@@ -321,13 +321,13 @@ void CheckGeneralValue(uint8_t identifier, int16_t value)
 			}
 			break;
 		case 5:
-			PID_setKp(value/10000.0); //proportional PID constant
+			//PID_setKp(value/10000.0); //proportional PID constant
 			break;
 		case 6:
-			PID_setKi(value/10000.0); //integral  PID constant
+			//PID_setKi(value/10000.0); //integral  PID constant
 			break;
 		case 7:
-			PID_setKd(value/10000.0); //differential PID constant
+			//PID_setKd(value/10000.0); //differential PID constant
 			break;
 		default:
 			break;
