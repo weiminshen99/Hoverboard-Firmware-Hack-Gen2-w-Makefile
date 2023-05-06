@@ -7,25 +7,29 @@
 
 	/* Choose PID parameters for slave wheel speed correction */
 	// note: PID calibration according to Ziegler–Nichols method give Ku=0.2, period=3seconds(96000 samples)
-	float PID_PARAM_KP        =0.3500;             	/* Proporcional */
-	float PID_PARAM_KI        =0.0005;        	/* Integral */
-	float PID_PARAM_KD        =0.0010;            	/* Derivative */
-
+	float PID_PARAM_KP        =0.3500;             /* Proporcional */
+	float PID_PARAM_KI        =0.0005;        /* Integral */ 
+	float PID_PARAM_KD        =0.0010;            /* Derivative */
+	
 #ifdef SLAVE
+	#include "math.h"
 	//#include <arm_math.h>
 	extern int16_t masterRemainingSteps;
 	/* PID error for slave wheel speed correction*/
 	float pid_error; //int16_t
 	/* Include ARM math */
+
 	/* ARM PID Instance, float_32 format */
 	//arm_pid_instance_f32 PID;
+	//arm_pid_instance_f32 PID;
+
 #endif
 
 bool overCurrent=FALSE;
 bool motorIsStopping=FALSE;
 
 uint16_t moveByStepsTimeout=0; //timeout used to maintain steady the wheel for a second, after a movementBySteps was completed
-
+	
 //const float speedConversionFactor= (((WHEEL_PERIMETER/90.0f)*6.0f)/62.5f)*3600 ; //90=steps in one turn of wheel, 6=steps in one turn of the phases, 62.5=time duration in usec for each speedcounter increment, 3600= confersion factor from mm/usec to km/h
 const float speedConversionFactor= (((WHEEL_PERIMETER/90.0f))/62.5f)*3600 ; //90=steps in one turn of wheel, 62.5=time duration in usec for each speedcounter increment, 3600= confersion factor from mm/usec to km/h
 const float speedConversionFactor_mm_per_second= (((WHEEL_PERIMETER/90.0f))/62.5f)*1000000 ; //90=steps in one turn of wheel, 62.5=time duration in usec for each speedcounter increment, 1000000= conversion factor from mm/usec to mm/sec
@@ -181,19 +185,20 @@ void blockPWM(int pwm, int pwmPos, int *y, int *b, int *g, bool stopPosition){
   }
 }
 
-#ifdef COMPILE_ERROOR // SLAVE
+#ifdef SLAVE
+/*
 void PID_init(void){
-			/* Set PID parameters for slave wheel speed correction*/
-			/* Set this for your needs */
-			PID.Kp = PID_PARAM_KP;		/* Proporcional */
-			PID.Ki = PID_PARAM_KI;		/* Integral */
-			PID.Kd = PID_PARAM_KD;		/* Derivative */
-			/* Initialize PID system */
+			/ Set PID parameters for slave wheel speed correction
+			/ Set this for your needs
+			PID.Kp = PID_PARAM_KP;		// Proporcional
+			PID.Ki = PID_PARAM_KI;		// Integral
+			PID.Kd = PID_PARAM_KD;		// Derivative
+			// Initialize PID system
 			arm_pid_init_f32(&PID, 1);
 }
 
 void PID_setKp(float myK){
-			PID_PARAM_KP = myK;		/* Proporcional */
+			PID_PARAM_KP = myK;
 			PID_init();
 }
 void PID_setKi(float myK){
@@ -204,6 +209,7 @@ void PID_setKd(float myK){
 			PID_PARAM_KD = myK;
 			PID_init();
 }
+*/
 #endif
 
 //----------------------------------------------------------------------------
@@ -488,7 +494,7 @@ void go_to(int16_t distanceInMillimeters){
 	remainingStepsFloat=remainingStepsFloat * 90.0f; //90 steps for each rotation of the wheel
 	remainingStepsFloat=remainingStepsFloat + 0.5f;
 	remainingSteps=(int16_t)remainingStepsFloat;
-	
+
 	if(remainingSteps==0) return; //abort
 	//start
 	lastPos=pos;
@@ -496,8 +502,8 @@ void go_to(int16_t distanceInMillimeters){
 	moveByStepsCompleted=FALSE;
 	moveByStepsTimeout=0;
 	//arm_pid_reset_q15(&PID);
-	#ifdef COMPILE_ERROR // SLAVE
-		PID_init();
+	#ifdef SLAVE
+		//PID_init();
 		masterRemainingSteps=remainingSteps; //avoid the slave wheel to rotate fast at the beginning, before to receive message from master board
 	#endif
 	motorIsStopping=FALSE;

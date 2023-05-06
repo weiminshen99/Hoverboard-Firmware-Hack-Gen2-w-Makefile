@@ -4,6 +4,15 @@
 #include "../Inc/led.h"
 #include "../Inc/defines.h"
 
+
+//----------------------------------------------------------------------------
+void toggle_led(uint32_t gpio_periph, uint32_t pin)
+//----------------------------------------------------------------------------
+{
+    GPIO_OCTL(gpio_periph) ^= pin;
+}
+
+
 // Only slave has LED mechanism
 #ifdef SLAVE
 

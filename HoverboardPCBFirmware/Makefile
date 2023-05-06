@@ -130,9 +130,7 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -IInc \
--I../../Drivers/GD32F1x0_standard_peripheral/Include \
--I../../Drivers/CMSIS/Include \
--I../../Drivers/CMSIS 
+-IRTE/Include
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

@@ -16,6 +16,7 @@
 #include "stdio.h"
 #include "string.h"
 //#include <math.h>
+#include "led.h"
 
 // Only master communicates with REMOTE device
 #ifdef MASTER
@@ -34,8 +35,8 @@
 	int32_t GpsLongitudeWGS84;
 	uint16_t GpsHdop;
 	uint8_t GpsSatellitesNumber;
-	
-	
+
+
 	extern FlagStatus panicButtonPressed;
 	//extern FlagStatus chargeStateLowActive;
 
@@ -66,17 +67,15 @@
 	#ifdef TERMINAL_ENABLED_PID_TUNING
 		extern float PID_PARAM_KP;
 		extern float PID_PARAM_KI;
-		extern float PID_PARAM_KD;		
+		extern float PID_PARAM_KD;
 	#endif
 //----------------------------------------------------------------------------
 // Send message to device connected on serial port REMOTE of the master board
 //----------------------------------------------------------------------------
 void Send_Data_over_REMOTE_serialPort_of_MasterBoard(void)
 {
-	
+	#ifdef TERMINAL_ENABLED
 
-	#ifdef TERMINAL_ENABLED 
-	
 		int index = 0;
 		char charVal[6];
 		uint8_t buffer[USART_REMOTE_MASTERBOARD_TX_BYTES];
@@ -85,8 +84,11 @@ void Send_Data_over_REMOTE_serialPort_of_MasterBoard(void)
 			SendBuffer(USART_REMOTE_COM, helpArray, 158);
 			return;
 		}
-		
-		if (printAccelerometerLog ){
+
+		if (printAccelerometerLog) {
+
+			toggle_led(LED_RED_PORT, LED_RED); // show alive
+
 			if(logImuArrayCurrentIndex==-1){
 				//print first line
 				SendBuffer(USART_REMOTE_COM, tableHeaderArray, 71);
@@ -96,7 +98,7 @@ void Send_Data_over_REMOTE_serialPort_of_MasterBoard(void)
 			for(;logImuArrayCurrentIndex<400;logImuArrayCurrentIndex++){
 				//sprintf(charVal, "%05F", logImuArray[logImuArrayCurrentIndex]); // this increases the firmware size!
 				myFtoa(logImuArray[logImuArrayCurrentIndex], charVal, 5); //
-				
+
 				buffer[index++] = charVal[0];
 				buffer[index++] = charVal[1];
 				buffer[index++] = charVal[2];
@@ -104,22 +106,20 @@ void Send_Data_over_REMOTE_serialPort_of_MasterBoard(void)
 				buffer[index++] = charVal[4];
 				buffer[index++] = charVal[5];
 				buffer[index++] = ',';
-				
+
 				if(logImuArrayCurrentIndex % 10==9){
 					//line end
 					logImuArrayCurrentIndex++;
 					buffer[index++] = '\r';
-					buffer[index++] = '\n';	
+					buffer[index++] = '\n';
 					SendBuffer(USART_REMOTE_COM, buffer, index);
 					return;
 				}
 			}
-		
-			
-			
+
 			printAccelerometerLog=FALSE;
 			logImuArrayCurrentIndex=0;
-			
+
 			return;
 		}
 
@@ -159,8 +159,8 @@ void Send_Data_over_REMOTE_serialPort_of_MasterBoard(void)
 				buffer[index++] = '\n';
 				SendBuffer(USART_REMOTE_COM, buffer, index);
 				return;
-		}		
-			
+		}
+
 		if (printMovementCompleted ){
 			printMovementCompleted=FALSE;
 			SendBuffer(USART_REMOTE_COM, doneArray, 7);
@@ -177,7 +177,7 @@ void Send_Data_over_REMOTE_serialPort_of_MasterBoard(void)
 void UpdateUSART_REMOTE_MASTER_BOARD_Input(void)
 {
 	uint8_t character = usartRemote_MasterBoard_COM_rx_buf[0];
-	
+
 	#ifdef MAVLINK_ENABLED
 		// Start character is captured, start record
 		if (character == 0xFD){

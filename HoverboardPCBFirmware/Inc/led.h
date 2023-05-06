@@ -6,6 +6,8 @@
 #include "gd32f1x0.h"
 #include "../Inc/config.h"
 
+void toggle_led(uint32_t gpio_periph, uint32_t pin);
+
 // Only slave has LED mechanism
 #ifdef SLAVE
 

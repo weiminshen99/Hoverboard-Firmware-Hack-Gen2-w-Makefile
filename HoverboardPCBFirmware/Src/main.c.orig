@@ -30,21 +30,21 @@
 	int16_t speed_mm_per_second_MasterWheel=(int16_t)0;						// global variable for speed in mm per second -6000 +6000 (21,6km/h)
 	int16_t speed_mm_per_second_SlaveWheel=(int16_t)0;						// global variable for speed in mm per second -6000 +6000 (21,6km/h)
 	int16_t speed_mm_per_second=(int16_t)0;						// global variable for speed in mm per second -6000 +6000 (21,6km/h)
-
+	
 	int16_t steerAngle = 0;  //angle pf steer between 180 and 0 degrees. 90 degrees to go straight
-
+		
 	int32_t actuatorSpeed = 0;								// actuator(lawnmower motor blade) speed. 0 to 1000
-
+	
 	float logImuArray[400]; 									//array of array for logging purposes
 	int16_t logImuArrayCurrentIndex=0; 				//index for log file
-
+	
 	float pitchAngle=0;
 	float rollAngle=0;
 	float yawAngle=0;
-
-	bool recordAccelerometerLog = TRUE;
-	bool printAccelerometerLog = TRUE;
-
+	
+	bool recordAccelerometerLog=FALSE;
+	bool printAccelerometerLog=FALSE;
+	
 	FlagStatus panicButtonPressed = SET;			//global variable. RESET when pressed.
 	FlagStatus it_is_Raining = RESET;					//global variable. SET when raining.
 	
@@ -344,47 +344,47 @@ int main (void){
 		// Reload watchdog while button is pressed
 		fwdgt_counter_reload();
 	}
-
+	
 #endif
 
   while(1)
 	{
 #ifdef MASTER
-		steerCounter++;
+		steerCounter++;	
 		Send_Data_over_REMOTE_serialPort_of_MasterBoard();
-
+		
 		// Read charge state
 		chargeStateLowActive = gpio_input_bit_get(CHARGE_STATE_PORT, CHARGE_STATE_PIN);
 		// Enable is depending on charger is connected or not
 		enable = chargeStateLowActive;
-
+		
 		//mainLoopPeriodMilliseconds=(halfMillisecondsCount+1)/2;
 		//halfMillisecondsCount=0;
-
+		
 		if(moveBySteps){ //movements controlled in number of steps forward or backward
 			// Reset the pwm timout to avoid stopping motors
 			ResetTimeout();
 			// do not shutdown if movement by steps is in progress
 			inactivity_timeout_counter = 0;
-
-
+			
+			
 		}else{ //classic movements controlled by speed and steer
-
+			
 			// Calculate expo rate for less steering with higher speeds
 			//expo = MAP((float)ABS(speed), 0, 1000, 1, 0.5);
-
+			
 			// Each speedvalue or steervalue between 50 and -50 means absolutely no pwm
 			// -> to get the device calm 'around zero speed'
 			//scaledSpeed = speed < 50 && speed > -50 ? 0 : CLAMP(speed, -1000, 1000) * SPEED_COEFFICIENT;
 			//scaledSteer = steer < 50 && steer > -50 ? 0 : CLAMP(steer, -1000, 1000) * STEER_COEFFICIENT * expo;
-
-
-
+			
+			
+			
 			// Map to an angle of 180 degress to 0 degrees for array access (means angle -90 to 90 degrees)
 			//steerAngle = MAP((float)scaledSteer, -1000, 1000, 180, 0);
 			xScale = lookUpTableAngle[(uint16_t)steerAngle];
 
-
+				
 				// Mix steering and speed value for right and left speed
 				if(steerAngle >= 90){
 					speed_mm_per_second_MasterWheel= CLAMP(speed_mm_per_second,-1000,1000);
@@ -393,31 +393,31 @@ int main (void){
 					speed_mm_per_second_MasterWheel= CLAMP(speed_mm_per_second * xScale,-1000,1000);
 					speed_mm_per_second_SlaveWheel = CLAMP(speed_mm_per_second,-1000,1000);
 				}
-
-
-
-
+		
+			
+			
+			
 			// Enable channel output
 			SetEnable(enable);
 
-
+			
 			// Set output
 			SetSpeed(speed_mm_per_second_MasterWheel);
-
-
+			
+			
 			// Calculate inactivity timeout (Except, when charger is active -> keep device running)
 			if (!chargeStateLowActive || ABS(speed_mm_per_second)>40){
 				inactivity_timeout_counter = 0;
 			}else{
 				inactivity_timeout_counter++;
 			}
-
+			
 
 		}
-
+		
 		// Decide if slave will be enabled
 		enableSlave = (enable == SET && timedOut == RESET) ? SET : RESET;
-
+		
 		// Decide which process value has to be sent
 		switch(sendSlaveIdentifier)
 		{
@@ -456,86 +456,86 @@ int main (void){
 			case 4:
 				sendSlaveValue = remainingSteps;
 				break;
-
+			
 			default:
 				break;
 		}
 		//send data to slave board
 		SendSlave(-speed_mm_per_second_SlaveWheel, enableSlave, RESET, chargeStateLowActive, sendSlaveIdentifier, sendSlaveValue);
-
+		
 		// Increment identifier
 		sendSlaveIdentifier++;
 		if (sendSlaveIdentifier > 7)
 		{
 			sendSlaveIdentifier = 0;
 		}
-
+		
 		if((ABS(pitchAngle)>20) ||  (ABS(rollAngle)>20) ){
 			robotReversed=TRUE;
 			//actuatorSpeed=0;
 			gpio_bit_write(LED_GREEN_PORT, LED_GREEN, RESET); //(inverted logic since it uses npn transistor)
-
+		
 			speed_mm_per_second=0;
 			stopNavigator();
 			ShutOff();
-
+			
 		}
 		// Show green battery symbol when battery level BAT_LOW_LVL1 is reached
-    		if (batteryVoltage > BAT_LOW_LVL1)
+    if (batteryVoltage > BAT_LOW_LVL1)
 		{
 			// Show green battery light
 			//ShowBatteryState(LED_GREEN); //green led is used by the actuator (blade motor) inside commsActuator.c
-
+			
 			// Beeps backwards
 			BeepsBackwards(beepsBackwards);
 		}
 		// Make silent sound and show orange battery symbol when battery level BAT_LOW_LVL2 is reached
-    		else if (batteryVoltage > BAT_LOW_LVL2 && batteryVoltage < BAT_LOW_LVL1)
+    else if (batteryVoltage > BAT_LOW_LVL2 && batteryVoltage < BAT_LOW_LVL1)
 		{
 			// Show orange battery light
 			ShowBatteryState(LED_ORANGE);
-
-      		buzzerFreq = 5;
-      		buzzerPattern = 8;
-    		}
+			
+      buzzerFreq = 5;
+      buzzerPattern = 8;
+    }
 		// Make even more sound and show red battery symbol when battery level BAT_LOW_DEAD is reached
 		else if  (batteryVoltage > BAT_LOW_DEAD && batteryVoltage < BAT_LOW_LVL2)
 		{
 			// Show red battery light
 			ShowBatteryState(LED_RED);
-
-      		buzzerFreq = 5;
-      		buzzerPattern = 1;
-    		}
+			
+      buzzerFreq = 5;
+      buzzerPattern = 1;
+    }
 		// Shut device off, when battery is dead
 		else if (batteryVoltage < BAT_LOW_DEAD)
 		{
-      		ShutOff();
-    		}
+      ShutOff();
+    }
 		else
 		{
 			ShutOff();
-    		}
+    }
 
 		if(panicButtonPressed==RESET){
 			ShutOff();
-    		}
-
+    }
+		
 		// Shut device off when button is pressed
 		if (gpio_input_bit_get(BUTTON_PORT, BUTTON_PIN))
 		{
-      			while (gpio_input_bit_get(BUTTON_PORT, BUTTON_PIN)) {}
+      while (gpio_input_bit_get(BUTTON_PORT, BUTTON_PIN)) {}
 			ShutOff();
-    		}
-
-
+    }
+		
+		
 		// Shut off device after INACTIVITY_TIMEOUT in minutes
-    		if (inactivity_timeout_counter > (INACTIVITY_TIMEOUT * 60 * 1000) / (DELAY_IN_MAIN_LOOP + 1))
-		{
-      			ShutOff();
-    		}
-#endif
-
+    if (inactivity_timeout_counter > (INACTIVITY_TIMEOUT * 60 * 1000) / (DELAY_IN_MAIN_LOOP + 1))
+		{ 
+      ShutOff();
+    }
+#endif	
+	
 
 #ifdef SLAVE
 		SetEnable(SET);
@@ -545,7 +545,7 @@ int main (void){
 
 
 		Delay(DELAY_IN_MAIN_LOOP);
-
+		
 		// Reload watchdog (watchdog fires after 1,6 seconds)
 		fwdgt_counter_reload();
   }
@@ -564,18 +564,18 @@ void ShutOff(void){
 		Delay(10);
 	}
 	buzzerFreq = 0;
-
+	
 	// Send shut off command to slave
 	SendSlave(0, RESET, SET, RESET, RESET, RESET);
-
+	
 	// Disable usart
 	usart_deinit(USART_MASTERSLAVE);
-
+	
 	// Set pwm and enable to off
 	SetEnable(RESET);
 	//SetPWM(0);
 	speed_mm_per_second_MasterWheel=0;
-
+	
 	gpio_bit_write(SELF_HOLD_PORT, SELF_HOLD_PIN, RESET);
 	while(1)
 	{
