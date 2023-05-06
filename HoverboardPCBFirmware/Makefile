@@ -73,7 +73,7 @@ Src/navigator.c
 
 # ASM sources
 ASM_SOURCES =  \
-$(DRIVERS_DIR)/startup_gd32f1x0.s
+startup_gd32f1x0.s
 
 
 #######################################
