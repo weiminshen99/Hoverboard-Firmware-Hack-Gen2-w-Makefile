@@ -21,7 +21,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include <math.h>
-//#include "arm_math.h"
+//#include "arm_math.h"	// for PID
 
 #ifdef MASTER
 
@@ -36,7 +36,7 @@
 	int32_t actuatorSpeed = 0;								// actuator(lawnmower motor blade) speed. 0 to 1000
 
 	float logImuArray[400]; 									//array of array for logging purposes
-	int16_t logImuArrayCurrentIndex=0; 				//index for log file
+	int16_t logImuArrayCurrentIndex=0; // set by GetAcceData(), -1 means fall
 
 	float pitchAngle=0;
 	float rollAngle=0;
@@ -45,36 +45,35 @@
 	bool recordAccelerometerLog = TRUE;
 	bool printAccelerometerLog = TRUE;
 
-	FlagStatus panicButtonPressed = SET;			//global variable. RESET when pressed.
-	FlagStatus it_is_Raining = RESET;					//global variable. SET when raining.
-	
-	FlagStatus activateWeakening = RESET;			// global variable for weakening
-	FlagStatus beepsBackwards = RESET;  			// global variable for beeps backwards
-				
-	extern uint8_t buzzerFreq;    						// global variable for the buzzer pitch. can be 1, 2, 3, 4, 5, 6, 7...
-	extern uint8_t buzzerPattern; 						// global variable for the buzzer pattern. can be 1, 2, 3, 4, 5, 6, 7...
-				
-	extern float batteryVoltage; 							// global variable for battery voltage
-	extern float currentDC; 									// global variable for current dc
-	extern float realSpeed_mm_per_second; 									// global variable for real Speed
-	extern bool moveBySteps;									//global variable for movements controlled in steps(=1) or classic movements controlled by speed and steer (=0)
-	extern bool moveByStepsCompleted;					//global variable. 1= movement completed.
+	FlagStatus panicButtonPressed = SET;	//global variable. RESET when pressed.
+	FlagStatus it_is_Raining = RESET;	//global variable. SET when raining.
+
+	FlagStatus activateWeakening = RESET;	// global variable for weakening
+	FlagStatus beepsBackwards = RESET; 	// global variable for beeps backwards
+
+	extern uint8_t buzzerFreq;	// global variable for the buzzer pitch. can be 1, 2, 3, 4, 5, 6, 7...
+	extern uint8_t buzzerPattern;	// global variable for the buzzer pattern. can be 1, 2, 3, 4, 5, 6, 7...
+
+	extern float batteryVoltage; 		// global variable for battery voltage
+	extern float currentDC; 		// global variable for current dc
+	extern float realSpeed_mm_per_second; 	// global variable for real Speed
+	extern bool moveBySteps;		// global variable for movements controlled in steps(=1) or classic movements controlled by speed and steer (=0)
+	extern bool moveByStepsCompleted;	// global variable 1= movement completed.
 	extern int16_t remainingSteps;
-	extern FlagStatus timedOut;								// Timeoutvariable set by timeout timer
-	
+	extern FlagStatus timedOut;		// Timeoutvariable set by timeout timer
+
 	bool robotReversed=FALSE;
-	
+
 	uint32_t inactivity_timeout_counter = 0;	// Inactivity counter
-	uint32_t steerCounter = 0;								// Steer counter for setting update rate
+	uint32_t steerCounter = 0;			// Steer counter for setting update rate
 
 	void ShowBatteryState(uint32_t pin);
 	void BeepsBackwards(FlagStatus beepsBackwards);
 	void ShutOff(void);
-	
 
-		extern float PID_PARAM_KP;
-		extern float PID_PARAM_KI;
-		extern float PID_PARAM_KD;		
+	extern float PID_PARAM_KP;
+	extern float PID_PARAM_KI;
+	extern float PID_PARAM_KD;
 #endif
 
 const float lookUpTableAngle[181] =  {
@@ -265,16 +264,17 @@ const float lookUpTableAngle[181] =  {
 //----------------------------------------------------------------------------
 // MAIN function
 //----------------------------------------------------------------------------
-int main (void){
+int main (void)
+{
 #ifdef MASTER
 	FlagStatus enable = RESET;
 	FlagStatus enableSlave = RESET;
 	FlagStatus chargeStateLowActive = SET;
-	
+
 	int16_t sendSlaveValue = 0;
 	uint8_t sendSlaveIdentifier = 0;
 	int8_t index = 8;
-  //int16_t pwmSlave = 0;
+ 	//int16_t pwmSlave = 0;
 	//int16_t pwmMaster = 0;
 	//int16_t scaledSpeed = 0;
 	//int16_t scaledSteer  = 0;
@@ -282,24 +282,24 @@ int main (void){
 
 	float xScale = 0;
 #endif
-	
+
 	//SystemClock_Config();
-  SystemCoreClockUpdate();
-  SysTick_Config(SystemCoreClock / 100);
-	
+  	SystemCoreClockUpdate();
+  	SysTick_Config(SystemCoreClock / 100);
+
 	// Init watchdog
 	if (Watchdog_init() == ERROR)
 	{
 		// If an error accours with watchdog initialization do not start device
 		while(1);
 	}
-	
+
 	// Init Interrupts
 	Interrupt_init();
-	
+
 	// Init timeout timer
 	TimeoutTimer_init();
-	
+
 	// Init GPIOs
 	GPIO_init();
 
@@ -333,10 +333,10 @@ int main (void){
 	// Startup-Sound
 	for (; index >= 0; index--)
 	{
-    buzzerFreq = index;
-    Delay(10);
-  }
-  buzzerFreq = 0;
+    		buzzerFreq = index;
+    		Delay(10);
+  	}
+  	buzzerFreq = 0;
 
 	// Wait until button is pressed
 	while (gpio_input_bit_get(BUTTON_PORT, BUTTON_PIN))
@@ -344,11 +344,11 @@ int main (void){
 		// Reload watchdog while button is pressed
 		fwdgt_counter_reload();
 	}
-
 #endif
 
   while(1)
 	{
+
 #ifdef MASTER
 		steerCounter++;
 		Send_Data_over_REMOTE_serialPort_of_MasterBoard();

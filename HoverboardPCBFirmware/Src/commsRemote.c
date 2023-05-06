@@ -31,11 +31,10 @@
 	#endif
 
 	uint16_t MavLinkCRC;
-	int32_t GpsLatitudeWGS84; 
+	int32_t GpsLatitudeWGS84;
 	int32_t GpsLongitudeWGS84;
 	uint16_t GpsHdop;
 	uint8_t GpsSatellitesNumber;
-
 
 	extern FlagStatus panicButtonPressed;
 	//extern FlagStatus chargeStateLowActive;
@@ -87,9 +86,9 @@ void Send_Data_over_REMOTE_serialPort_of_MasterBoard(void)
 
 		if (printAccelerometerLog) {
 
-			toggle_led(LED_RED_PORT, LED_RED); // show alive
+toggle_led(LED_RED_PORT, LED_RED); // <====================== show alive
 
-			if(logImuArrayCurrentIndex==-1){
+			if (logImuArrayCurrentIndex==-1) {
 				//print first line
 				SendBuffer(USART_REMOTE_COM, tableHeaderArray, 71);
 				logImuArrayCurrentIndex++;
@@ -188,12 +187,12 @@ void UpdateUSART_REMOTE_MASTER_BOARD_Input(void)
 		// Start character is captured, start record
 		if (character == '/')
 		{
-			
+
 			sUSARTRemote_MasterBoard_RecordBufferCounter = 0;
 			isRecordingDataPacket = 1;
 		}
 	#endif
-	
+
 	if (isRecordingDataPacket)
 	{
 		sUSARTRemote_MasterBoard_RecordBuffer[sUSARTRemote_MasterBoard_RecordBufferCounter] = character;
@@ -202,10 +201,10 @@ void UpdateUSART_REMOTE_MASTER_BOARD_Input(void)
 			//if buffer is full 
 			if (sUSARTRemote_MasterBoard_RecordBufferCounter >= USART_REMOTE_MASTERBOARD_RX_BYTES)
 			{
-				
+
 				sUSARTRemote_MasterBoard_RecordBufferCounter = 0;
 				isRecordingDataPacket = 0;
-				
+
 				// Check input
 				CheckUSART_Remote_MasterBoard_Input (sUSARTRemote_MasterBoard_RecordBuffer);
 			}
@@ -214,10 +213,10 @@ void UpdateUSART_REMOTE_MASTER_BOARD_Input(void)
 			if (sUSARTRemote_MasterBoard_RecordBufferCounter >= USART_REMOTE_MASTERBOARD_RX_BYTES ||
 				character=='\r')
 			{
-				
+
 				sUSARTRemote_MasterBoard_RecordBufferCounter = 0;
 				isRecordingDataPacket = 0;
-				
+
 				// Check input
 				CheckUSART_Remote_MasterBoard_Input (sUSARTRemote_MasterBoard_RecordBuffer);
 			}

@@ -57,13 +57,10 @@ void GetAccelerometerData(void){
 	//WAKE UP the device
 	if (componentIsWakingUp) {
 
-		toggle_led(LED_RED_PORT, LED_RED); // show alive
-
 		//we wait at least 81msec
-		if(waitCycles<20){
+		if (waitCycles<20)
 			waitCycles++;
-
-		}else{
+		else {
 			waitCycles=0;
 			componentIsWakingUp=FALSE;
 		}
@@ -98,19 +95,18 @@ void GetAccelerometerData(void){
 		i2c_stop_on_bus(I2C0);
 		while(I2C_CTL0(I2C0)&0x0200);
 
-	} else if (accelerometerIsSleeping) {
+	} else if (accelerometerIsSleeping) { // then set Accelerometer to normal power mode (page 82)
 
 		accelerometerIsSleeping=FALSE;
 		componentIsWakingUp=TRUE; //we use this to wait some time before to send more commands
 
-		toggle_led(LED_ORANGE_PORT, LED_ORANGE); // show alive
+toggle_led(LED_ORANGE_PORT, LED_ORANGE); // <============================ show alive
 
 		//SEND ACCELEROMETER WAKEUP COMMAND 0x11
 		// wait until I2C bus is idle
 		while(i2c_flag_get(I2C0, I2C_FLAG_I2CBSY));
 		// send a start condition to I2C bus
 		i2c_start_on_bus(I2C0);
-
 		// wait until SBSEND bit is set
 		while(!i2c_flag_get(I2C0, I2C_FLAG_SBSEND));
 		// send slave address to I2C bus
@@ -120,11 +116,11 @@ void GetAccelerometerData(void){
 		// clear ADDSEND bit
 		i2c_flag_clear(I2C0, I2C_FLAG_ADDSEND);
 		// send a data byte
-		i2c_data_transmit(I2C0,0x7e); //register 0x7e
+		i2c_data_transmit(I2C0,0x7e); // CMD register 0x7e
 		// wait until the transmission data register is empty
 		while(!i2c_flag_get(I2C0, I2C_FLAG_TBE));
 		// send a data byte
-		i2c_data_transmit(I2C0,0x11);  //WAKE UP accelerometer
+		i2c_data_transmit(I2C0,0x11);  // WAKE UP accelerometer
 		// wait until the transmission data register is empty
 		while(!i2c_flag_get(I2C0, I2C_FLAG_TBE));
 		// send a stop condition to I2C bus
@@ -218,7 +214,7 @@ void GetAccelerometerData(void){
 		//Fast Offset Calibration enabling. we should write on record 0x69 the value 0x7D ( gyroFOCenable(bit6=1), accX=0g (bit54=11), accY=0g(bit32=11), accZ=1g(bit10=01) ). 
 		// wait until I2C bus is idle
 		while(i2c_flag_get(I2C0, I2C_FLAG_I2CBSY));
-		// send a start condition to I2C bus 
+		// send a start condition to I2C bus
 		i2c_start_on_bus(I2C0);
 		// wait until SBSEND bit is set
 		while(!i2c_flag_get(I2C0, I2C_FLAG_SBSEND));
@@ -226,13 +222,13 @@ void GetAccelerometerData(void){
 		i2c_master_addressing(I2C0, I2C_IMU_ADDRESS, I2C_TRANSMITTER);
 		// wait until ADDSEND bit is set
 		while(!i2c_flag_get(I2C0, I2C_FLAG_ADDSEND));
-		// clear ADDSEND bit 
+		// clear ADDSEND bit
 		i2c_flag_clear(I2C0, I2C_FLAG_ADDSEND);
-		// send a data byte 
+		// send a data byte
 		i2c_data_transmit(I2C0,0x69); //register 0x69
 		// wait until the transmission data register is empty
 		while(!i2c_flag_get(I2C0, I2C_FLAG_TBE));
-		// send a data byte 
+		// send a data byte
 		i2c_data_transmit(I2C0,0x7D);  //Fast Offset Calibration enabling
 		// wait until the transmission data register is empty
 		while(!i2c_flag_get(I2C0, I2C_FLAG_TBE));
@@ -276,35 +272,31 @@ void GetAccelerometerData(void){
 		while(i2c_flag_get(I2C0, I2C_FLAG_I2CBSY));
 		// send a start condition to I2C bus
 		i2c_start_on_bus(I2C0);
-
 		// wait until SBSEND bit is set
 		while(!i2c_flag_get(I2C0, I2C_FLAG_SBSEND));
 		// send slave address to I2C bus
 		i2c_master_addressing(I2C0, I2C_IMU_ADDRESS, I2C_TRANSMITTER);
-
 		// wait until ADDSEND bit is set
 		while(!i2c_flag_get(I2C0, I2C_FLAG_ADDSEND));
 		// clear ADDSEND bit
 		i2c_flag_clear(I2C0, I2C_FLAG_ADDSEND);
-		// send a data byte
-		i2c_data_transmit(I2C0,0x0C + offsetDataValueToReadFromAccelerometerMemory);  //first REGISTER to read 0x0C
-
+		// send a data byte (first REGISTER to read is 0x0C)
+		i2c_data_transmit(I2C0,0x0C + offsetDataValueToReadFromAccelerometerMemory);
 		// wait until the transmission data register is empty
 		while(!i2c_flag_get(I2C0, I2C_FLAG_TBE));
 		// send a stop condition to I2C bus
 		i2c_stop_on_bus(I2C0);
-
 		while(I2C_CTL0(I2C0)&0x0200);
-		//now reopen the bus to receive the reply
+		// now reopen the bus to receive the reply
 		// wait until I2C bus is idle
 		while(i2c_flag_get(I2C0, I2C_FLAG_I2CBSY));
 		// send a start condition to I2C bus
 		i2c_start_on_bus(I2C0);
-		// wait until SBSEND bit is set 
+		// wait until SBSEND bit is set
 		while(!i2c_flag_get(I2C0, I2C_FLAG_SBSEND));
-		// send slave address to I2C bus 
+		// send slave address to I2C bus
 		i2c_master_addressing(I2C0, I2C_IMU_ADDRESS, I2C_RECEIVER);
-		// wait until ADDSEND bit is set 
+		// wait until ADDSEND bit is set
 		while(!i2c_flag_get(I2C0, I2C_FLAG_ADDSEND));
 		// if we receive only one byte: reset ACKEN bit
 		//i2c_ack_config(I2C0, I2C_ACK_DISABLE);
@@ -313,10 +305,8 @@ void GetAccelerometerData(void){
 		// if we receive only one byte: send stop condition
 		//i2c_stop_on_bus(I2C0);
 		//now we receive
-		for(bytesToReadIndex=0; bytesToReadIndex<2; bytesToReadIndex++){ //era 22
-
-			toggle_led(LED_GREEN_PORT, LED_GREEN); // show alive
-
+		for (bytesToReadIndex=0; bytesToReadIndex<2; bytesToReadIndex++)
+		{ //era 22
 			if(2-2 == bytesToReadIndex){
 				// wait until the second last data byte is received into the shift register
 				while(!i2c_flag_get(I2C0, I2C_FLAG_BTC));
@@ -325,12 +315,15 @@ void GetAccelerometerData(void){
 			}
 			// wait until the RBNE bit is set
 			while(!i2c_flag_get(I2C0, I2C_FLAG_RBNE));
+
+toggle_led(LED_GREEN_PORT, LED_GREEN); // <=========== show alive
+
 			tmpVar=i2c_data_receive(I2C0);
 			imuArray[bytesToReadIndex+offsetDataValueToReadFromAccelerometerMemory]=tmpVar;
 		}
 
-		switch(offsetDataValueToReadFromAccelerometerMemory){
-
+		switch (offsetDataValueToReadFromAccelerometerMemory)
+		{
 			case 0:
 				gyroX=(int16_t)( imuArray[0]  | imuArray[1]  << 8) * 0.0038; // 125degrees per second/2^15
 				break;
@@ -360,8 +353,7 @@ void GetAccelerometerData(void){
 			case 20:
 				temperature=( (int16_t)( imuArray[20] | imuArray[21] << 8) * 0.00195312) +23 ;  //celsius degrees - we could set an alarm if temperature goes over 50 celsius degrees
 
-				//now we have entire array updated, let's record it, if requested
-				//log memory
+				//now we have read the entire array from IMU, let's record it, if requested
 				if(recordAccelerometerLog){
 					logImuArray[logImuArrayCurrentIndex]=gyroX;
 					logImuArrayCurrentIndex++;
@@ -384,27 +376,25 @@ void GetAccelerometerData(void){
 					logImuArray[logImuArrayCurrentIndex]=pitchAngle;
 					logImuArrayCurrentIndex++;
 
-					if(logImuArrayCurrentIndex>391){
-						//buffer is full, print it
+					if (logImuArrayCurrentIndex>391)
+					{ 	// buffer is full, print it
+toggle_led(LED_RED_PORT, LED_RED); // <=========== show alive
 						recordAccelerometerLog=FALSE;
-						printAccelerometerLog=TRUE;
-						logImuArrayCurrentIndex=-1;
+						printAccelerometerLog=TRUE; // see commsRemote.c
+						logImuArrayCurrentIndex=-1; // indicates to print
 					}
 				}
 				break;
 		}
 
 		offsetDataValueToReadFromAccelerometerMemory+=2;
-		if(offsetDataValueToReadFromAccelerometerMemory==12) offsetDataValueToReadFromAccelerometerMemory=0;
-
-		// ^
-		// |
-		// |
-		//set limit to 22 if you want to read also temperature and timestamp
+		// set the limit to 12, if you only want to read gyro and accelero
+		// set the limit to 22. if you also want to read temperature and timestamp
+		if (offsetDataValueToReadFromAccelerometerMemory==12)
+			offsetDataValueToReadFromAccelerometerMemory=0;
 
 		// if we receive more bytes: send a stop condition to I2C bus
 		i2c_stop_on_bus(I2C0);
-
 		while(I2C_CTL0(I2C0)&0x0200);
 		// enable acknowledge
 		i2c_ack_config(I2C0, I2C_ACK_ENABLE);
