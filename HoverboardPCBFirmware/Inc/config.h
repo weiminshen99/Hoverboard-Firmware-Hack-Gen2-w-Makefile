@@ -9,8 +9,8 @@
 	#include "gd32f1x0.h"
 
 	// ################################################################################
-	#define MASTER										  	// Select if firmware is for master or slave board
-	//#define SLAVE 												// Select if firmware is for master or slave board
+	//#define MASTER	// Select if firmware is for master or slave board
+	#define SLAVE 		// Select if firmware is for master or slave board
 	// ################################################################################
 	#define PWM_FREQ         		16000     // PWM frequency in Hz
 	#define DEAD_TIME        		60        // PWM deadtime (60 = 1µs, measured by oscilloscope)

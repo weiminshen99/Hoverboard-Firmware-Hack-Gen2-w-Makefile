@@ -13,15 +13,14 @@
 	
 #ifdef SLAVE
 	#include "math.h"
-	//#include <arm_math.h>
+	#include <arm_math.h>
 	extern int16_t masterRemainingSteps;
 	/* PID error for slave wheel speed correction*/
 	float pid_error; //int16_t
 	/* Include ARM math */
 
 	/* ARM PID Instance, float_32 format */
-	//arm_pid_instance_f32 PID;
-	//arm_pid_instance_f32 PID;
+	arm_pid_instance_f32 PID;
 
 #endif
 
