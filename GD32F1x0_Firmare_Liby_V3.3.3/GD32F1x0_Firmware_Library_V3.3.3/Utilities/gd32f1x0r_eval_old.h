@@ -1,11 +1,3 @@
-/*
-*
-*	2023-5-23
-*	Modified to use the split hoverboards Gen.0 hardware by weiminshen99@gmail.com
-*
-*/
-
-
 /*!
     \file    gd32f1x0r_eval.h
     \brief   definitions for GD32f1x0_EVAL's leds, keys and COM ports hardware resources
@@ -72,7 +64,7 @@ typedef enum
 #endif
 } key_typedef_enum;
 
-typedef enum
+typedef enum 
 {
     KEY_MODE_GPIO = 0,
     KEY_MODE_EXTI = 1
@@ -84,27 +76,23 @@ typedef enum
 /* GD32130_150 eval low layer led */
 #define LEDn                             4
 
-// RED LED
-#define LED1_PIN                         GPIO_PIN_3
-#define LED1_GPIO_PORT                   GPIOB
-#define LED1_GPIO_CLK                    RCU_GPIOB
-
-// GREEN LED
-#define LED2_PIN                         GPIO_PIN_15
-#define LED2_GPIO_PORT                   GPIOA
-#define LED2_GPIO_CLK                    RCU_GPIOA
-
-// ORANGE LED
+#define LED1_PIN                         GPIO_PIN_10
+#define LED1_GPIO_PORT                   GPIOC
+#define LED1_GPIO_CLK                    RCU_GPIOC
+  
+#define LED2_PIN                         GPIO_PIN_11
+#define LED2_GPIO_PORT                   GPIOC
+#define LED2_GPIO_CLK                    RCU_GPIOC
+  
 #define LED3_PIN                         GPIO_PIN_12
-#define LED3_GPIO_PORT                   GPIOA
-#define LED3_GPIO_CLK                    RCU_GPIOA
+#define LED3_GPIO_PORT                   GPIOC
+#define LED3_GPIO_CLK                    RCU_GPIOC
+  
+#define LED4_PIN                         GPIO_PIN_2
+#define LED4_GPIO_PORT                   GPIOD
+#define LED4_GPIO_CLK                    RCU_GPIOD
 
-// Upper LED
-#define LED4_PIN                         GPIO_PIN_1
-#define LED4_GPIO_PORT                   GPIOA
-#define LED4_GPIO_CLK                    RCU_GPIOA
-
-/* GD32130_150 eval low layer button */
+/* GD32130_150 eval low layer button */  
 #define KEYn                             3
 
 /* tamper push-button */
@@ -123,7 +111,7 @@ typedef enum
 #define WAKEUP_KEY_EXTI_LINE             EXTI_0
 #define WAKEUP_KEY_EXTI_PORT_SOURCE      EXTI_SOURCE_GPIOA
 #define WAKEUP_KEY_EXTI_PIN_SOURCE       EXTI_SOURCE_PIN0
-#define WAKEUP_KEY_EXTI_IRQn             EXTI0_1_IRQn 
+#define WAKEUP_KEY_EXTI_IRQn             EXTI0_1_IRQn  
 
 /* user push-button */
 #define USER_KEY_PIN                     GPIO_PIN_7
@@ -135,26 +123,84 @@ typedef enum
 #define USER_KEY_EXTI_IRQn               EXTI4_15_IRQn
 
 /* GD32130_150 eval low layer COM */
+#define COMn                             1
+
+/* definition for COM 1, connected to USART0 */
+#define EVAL_COM0                        USART0
+#define EVAL_COM0_CLK                    RCU_USART0
+
+#define EVAL_COM0_TX_PIN                 GPIO_PIN_9
+#define EVAL_COM0_RX_PIN                 GPIO_PIN_10
+
+#define EVAL_COM_GPIO_PORT               GPIOA
+#define EVAL_COM_GPIO_CLK                RCU_GPIOA
+#define EVAL_COM_AF                      GPIO_AF_1
+
+/* define for GD32F170_190 eval board */
+#elif defined(GD32F170_190)
+
+/* GD32170_190 eval low layer led */
+#define LEDn                             4
+
+#define LED1_PIN                         GPIO_PIN_11
+#define LED1_GPIO_PORT                   GPIOA
+#define LED1_GPIO_CLK                    RCU_GPIOA
+  
+#define LED2_PIN                         GPIO_PIN_12
+#define LED2_GPIO_PORT                   GPIOA
+#define LED2_GPIO_CLK                    RCU_GPIOA
+  
+#define LED3_PIN                         GPIO_PIN_6
+#define LED3_GPIO_PORT                   GPIOB
+#define LED3_GPIO_CLK                    RCU_GPIOB
+  
+#define LED4_PIN                         GPIO_PIN_7
+#define LED4_GPIO_PORT                   GPIOB
+#define LED4_GPIO_CLK                    RCU_GPIOB
+
+/* GD32170_190 eval low layer button */  
+#define KEYn                             2
+
+/* tamper push-button */ 
+#define TAMPER_KEY_PIN                   GPIO_PIN_13
+#define TAMPER_KEY_GPIO_PORT             GPIOC
+#define TAMPER_KEY_GPIO_CLK              RCU_GPIOC
+#define TAMPER_KEY_EXTI_LINE             EXTI_13
+#define TAMPER_KEY_EXTI_PORT_SOURCE      EXTI_SOURCE_GPIOC
+#define TAMPER_KEY_EXTI_PIN_SOURCE       EXTI_SOURCE_PIN13
+#define TAMPER_KEY_EXTI_IRQn             EXTI4_15_IRQn
+
+/* wakeup push-button */
+#define WAKEUP_KEY_PIN                   GPIO_PIN_0
+#define WAKEUP_KEY_GPIO_PORT             GPIOA
+#define WAKEUP_KEY_GPIO_CLK              RCU_GPIOA
+#define WAKEUP_KEY_EXTI_LINE             EXTI_0
+#define WAKEUP_KEY_EXTI_PORT_SOURCE      EXTI_SOURCE_GPIOA
+#define WAKEUP_KEY_EXTI_PIN_SOURCE       EXTI_SOURCE_PIN0
+#define WAKEUP_KEY_EXTI_IRQn             EXTI0_1_IRQn  
+
+/* GD32170_190 eval low layer COM */ 
 #define COMn                             2
 
 /* definition for COM 1, connected to USART0 */
 #define EVAL_COM1                        USART0
 #define EVAL_COM1_CLK                    RCU_USART0
-#define EVAL_COM1_TX_PIN                 GPIO_PIN_6
-#define EVAL_COM1_RX_PIN                 GPIO_PIN_7
-#define EVAL_COM1_GPIO_PORT              GPIOB
-#define EVAL_COM1_GPIO_CLK               RCU_GPIOB
-#define EVAL_COM_AF                      GPIO_AF_1
-
 /* definition for COM 2, connected to USART1 */
 #define EVAL_COM2                        USART1
 #define EVAL_COM2_CLK                    RCU_USART1
+
+#define EVAL_COM1_TX_PIN                 GPIO_PIN_9
+#define EVAL_COM1_RX_PIN                 GPIO_PIN_10
 #define EVAL_COM2_TX_PIN                 GPIO_PIN_2
 #define EVAL_COM2_RX_PIN                 GPIO_PIN_3
-#define EVAL_COM2_GPIO_PORT              GPIOA
-#define EVAL_COM2_GPIO_CLK               RCU_GPIOA
 
-#endif // GD32F130_150
+#define EVAL_COM_GPIO_PORT               GPIOA
+#define EVAL_COM_GPIO_CLK                RCU_GPIOA
+#define EVAL_COM_AF                      GPIO_AF_1
+
+#else
+    #error "Please define GD32F130_150 or GD32F170_190"
+#endif
 
 /* function declarations */
 /* configures led GPIO */

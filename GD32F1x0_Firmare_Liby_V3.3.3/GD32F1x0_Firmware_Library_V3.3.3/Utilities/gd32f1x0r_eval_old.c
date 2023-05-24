@@ -1,13 +1,4 @@
-
-/*
-*
-*	2023-5-23
-*	Modified to use the split hoverboards Gen.0 hardware by weiminshen99@gmail.com
-*
-*/
-
-
-/*!
+ /*!
     \file    gd32f1x0r_eval.c
     \brief   firmware functions to manage leds, keys, COM ports
 
@@ -55,46 +46,58 @@ static uint32_t GPIO_PORT[LEDn] = {LED1_GPIO_PORT,
                                    LED4_GPIO_PORT};
 
 static uint32_t GPIO_PIN[LEDn] = {LED1_PIN,
-                                  LED2_PIN,
-                                  LED3_PIN,
+                                  LED2_PIN, 
+                                  LED3_PIN, 
                                   LED4_PIN};
 
 
 static rcu_periph_enum COM_CLK[COMn] = {
-                                  EVAL_COM1_CLK,
-                                  EVAL_COM2_CLK
+#ifdef GD32F130_150
+                                        EVAL_COM0_CLK,
+#elif defined(GD32F170_190)
+                                        EVAL_COM1_CLK,
+                                        EVAL_COM2_CLK
+#endif
                                        };
 
 static uint32_t COM_TX_PIN[COMn] = {
+#ifdef GD32F130_150
+                                    EVAL_COM0_TX_PIN,
+#elif defined(GD32F170_190)
                                     EVAL_COM1_TX_PIN,
                                     EVAL_COM2_TX_PIN
+#endif
                                    };
 
 static uint32_t COM_RX_PIN[COMn] = {
+#ifdef GD32F130_150
+                                    EVAL_COM0_RX_PIN,
+#elif defined(GD32F170_190)
                                     EVAL_COM1_RX_PIN,
                                     EVAL_COM2_RX_PIN
+#endif
                                    };
 
 static rcu_periph_enum GPIO_CLK[LEDn] = {LED1_GPIO_CLK,
-                                         LED2_GPIO_CLK,
-                                         LED3_GPIO_CLK,
+                                         LED2_GPIO_CLK, 
+                                         LED3_GPIO_CLK, 
                                          LED4_GPIO_CLK};
 
-static uint32_t KEY_PORT[KEYn] = {WAKEUP_KEY_GPIO_PORT,
+static uint32_t KEY_PORT[KEYn] = {WAKEUP_KEY_GPIO_PORT, 
                                   TAMPER_KEY_GPIO_PORT,
-#ifdef GD32F130_150
+#ifdef GD32F130_150                            
                                   USER_KEY_GPIO_PORT
 #endif
                                   };
 
-static uint32_t KEY_PIN[KEYn] = {WAKEUP_KEY_PIN,
+static uint32_t KEY_PIN[KEYn] = {WAKEUP_KEY_PIN, 
                                  TAMPER_KEY_PIN,
 #ifdef GD32F130_150
                                  USER_KEY_PIN
 #endif
                                  };
 
-static rcu_periph_enum KEY_CLK[KEYn] = {WAKEUP_KEY_GPIO_CLK,
+static rcu_periph_enum KEY_CLK[KEYn] = {WAKEUP_KEY_GPIO_CLK, 
                                         TAMPER_KEY_GPIO_CLK,
 #ifdef GD32F130_150
                                         USER_KEY_GPIO_CLK
@@ -122,7 +125,7 @@ static uint8_t KEY_PIN_SOURCE[KEYn] = {WAKEUP_KEY_EXTI_PIN_SOURCE,
 #endif
                                        };
 
-static uint8_t KEY_IRQn[KEYn] = {WAKEUP_KEY_EXTI_IRQn,
+static uint8_t KEY_IRQn[KEYn] = {WAKEUP_KEY_EXTI_IRQn, 
                                  TAMPER_KEY_EXTI_IRQn,
 #ifdef GD32F130_150
                                  USER_KEY_EXTI_IRQn
@@ -144,9 +147,9 @@ void  gd_eval_led_init (led_typedef_enum lednum)
 {
     /* enable the led clock */
     rcu_periph_clock_enable(GPIO_CLK[lednum]);
-    /* configure led GPIO port */
-    gpio_mode_set(GPIO_PORT[lednum], GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN[lednum]);
-    gpio_output_options_set(GPIO_PORT[lednum], GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN[lednum]);
+    /* configure led GPIO port */ 
+    gpio_mode_set(GPIO_PORT[lednum], GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,GPIO_PIN[lednum]);
+    gpio_output_options_set(GPIO_PORT[lednum], GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,GPIO_PIN[lednum]);
 
     GPIO_BC(GPIO_PORT[lednum]) = GPIO_PIN[lednum];
 }
@@ -261,37 +264,44 @@ void gd_eval_com_init(uint32_t COM)
 {
     /* enable GPIO clock */
     uint32_t COM_ID = 0U;
-
+#ifdef GD32F130_150
+    if(EVAL_COM0==COM){
+        COM_ID = 0U;
+    }
+#elif defined(GD32F170_190)
     if(EVAL_COM1==COM){
         COM_ID = 0U;
-    	rcu_periph_clock_enable(EVAL_COM1_GPIO_CLK);
-    	/* connect port to USARTx_Tx */
-    	gpio_af_set(EVAL_COM1_GPIO_PORT, EVAL_COM_AF, COM_TX_PIN[COM_ID]);
-    	/* connect port to USARTx_Rx */
-    	gpio_af_set(EVAL_COM1_GPIO_PORT, EVAL_COM_AF, COM_RX_PIN[COM_ID]);
-    	/* configure USART Tx as alternate function push-pull */
-    	gpio_mode_set(EVAL_COM1_GPIO_PORT, GPIO_MODE_AF, GPIO_PUPD_PULLUP,COM_TX_PIN[COM_ID]);
-    	gpio_output_options_set(EVAL_COM1_GPIO_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_10MHZ,COM_TX_PIN[COM_ID]);
-    	/* configure USART Rx as alternate function push-pull */
-    	gpio_mode_set(EVAL_COM1_GPIO_PORT, GPIO_MODE_AF, GPIO_PUPD_PULLUP,COM_RX_PIN[COM_ID]);
-    	gpio_output_options_set(EVAL_COM1_GPIO_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_10MHZ,COM_RX_PIN[COM_ID]);
-
-    } else if (EVAL_COM2==COM){
+    }else if(EVAL_COM2==COM){
         COM_ID = 1U;
-    	rcu_periph_clock_enable(EVAL_COM2_GPIO_CLK);
-    	/* connect port to USARTx_Tx */
-    	gpio_af_set(EVAL_COM2_GPIO_PORT, EVAL_COM_AF, COM_TX_PIN[COM_ID]);
-    	/* connect port to USARTx_Rx */
-    	gpio_af_set(EVAL_COM2_GPIO_PORT, EVAL_COM_AF, COM_RX_PIN[COM_ID]);
-    	gpio_mode_set(EVAL_COM2_GPIO_PORT, GPIO_MODE_AF, GPIO_PUPD_PULLUP,COM_TX_PIN[COM_ID]);
-    	gpio_output_options_set(EVAL_COM2_GPIO_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_10MHZ,COM_TX_PIN[COM_ID]);
-    	/* configure USART Rx as alternate function push-pull */
-    	gpio_mode_set(EVAL_COM2_GPIO_PORT, GPIO_MODE_AF, GPIO_PUPD_PULLUP,COM_RX_PIN[COM_ID]);
-    	gpio_output_options_set(EVAL_COM2_GPIO_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_10MHZ,COM_RX_PIN[COM_ID]);
     }
+#endif /* GD32F170_190 */
 
+    rcu_periph_clock_enable( EVAL_COM_GPIO_CLK);
+
+#if defined(GD32F130_150)
     /* enable USART clock */
     rcu_periph_clock_enable(COM_CLK[COM_ID]);
+#elif defined(GD32F170_190)
+    /* enable USART clock */
+    rcu_periph_clock_enable(COM_CLK[COM_ID]);
+#else
+    #error "Please define GD32F130_150 or GD32F170_190"
+#endif 
+
+    /* connect port to USARTx_Tx */
+    gpio_af_set(EVAL_COM_GPIO_PORT, EVAL_COM_AF, COM_TX_PIN[COM_ID]);
+
+    /* connect port to USARTx_Rx */
+    gpio_af_set(EVAL_COM_GPIO_PORT, EVAL_COM_AF, COM_RX_PIN[COM_ID]);
+
+    /* configure USART Tx as alternate function push-pull */
+    gpio_mode_set(EVAL_COM_GPIO_PORT, GPIO_MODE_AF, GPIO_PUPD_PULLUP,COM_TX_PIN[COM_ID]);
+    gpio_output_options_set(EVAL_COM_GPIO_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_10MHZ,COM_TX_PIN[COM_ID]);
+
+    /* configure USART Rx as alternate function push-pull */
+    gpio_mode_set(EVAL_COM_GPIO_PORT, GPIO_MODE_AF, GPIO_PUPD_PULLUP,COM_RX_PIN[COM_ID]);
+    gpio_output_options_set(EVAL_COM_GPIO_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_10MHZ,COM_RX_PIN[COM_ID]);
+
     /* USART configure */
     usart_deinit(COM);
     usart_baudrate_set(COM,115200U);
